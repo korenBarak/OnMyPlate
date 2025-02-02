@@ -1,15 +1,13 @@
 package com.example.onmyplate
-
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.onmyplate.databinding.ActivitySinglePostBinding
-import com.example.onmyplate.model.FirebaseModel
 import com.example.onmyplate.model.Post
+import com.example.onmyplate.model.ServerRequestsModel
 
 class SinglePostActivity : AppCompatActivity() {
     private lateinit var binding : ActivitySinglePostBinding
@@ -41,13 +39,10 @@ class SinglePostActivity : AppCompatActivity() {
         }
 
         binding.submitButton.setOnClickListener {
-            // OPTION A: take a picture
-            binding?.imageView?.isDrawingCacheEnabled = true
-            binding?.imageView?.buildDrawingCache()
+            binding.imageView.isDrawingCacheEnabled = true
+            binding.imageView.buildDrawingCache()
 
-            val bitmap = (binding?.imageView?.drawable as BitmapDrawable).bitmap
-
-            Log.d("TAG", "this is something... ${bitmap.toString()}")
+            val bitmap = (binding.imageView.drawable as BitmapDrawable).bitmap
 
             val post = Post(
                 restaurantName =  binding.restaurantTextField.text.toString(),
@@ -56,7 +51,7 @@ class SinglePostActivity : AppCompatActivity() {
                 rating =   5,
             )
 
-            FirebaseModel().addPost(post, bitmap)
+            ServerRequestsModel().addPost(post, bitmap)
         }
     }
 }
