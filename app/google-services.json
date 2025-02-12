@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "243311920186",
+    "project_id": "onmyplate-5d321",
+    "storage_bucket": "onmyplate-5d321.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:243311920186:android:32f25654f0b4f9ec8b6103",
+        "android_client_info": {
+          "package_name": "com.example.onmyplate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9d8PUWHZ3NJfErkC_P_INBLRWFFTOWkY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
