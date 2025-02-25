@@ -9,7 +9,13 @@ import com.cloudinary.android.policy.GlobalUploadPolicy
 import com.example.onmyplate.BuildConfig
 import com.example.onmyplate.base.MyApplication
 import com.example.onmyplate.utils.extension.toFile
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 import java.io.File
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class CloudinaryModel {
     init {
@@ -25,15 +31,30 @@ class CloudinaryModel {
         }
     }
 
-    fun uploadImage(
-        bitmap: Bitmap,
-        name: String,
-        onSuccess: (String?) -> Unit,
-        onError: (String?) -> Unit
+    suspend fun uploadImages(
+        bitmaps: List<Bitmap>, name: String,
+        onSuccess: (List<String?>) -> Unit,
+        onError: (List<String?>) -> Unit
     ) {
         val context = MyApplication.Globals.context ?: return
-        val file : File = bitmap.toFile(context, name)
 
+        val uploadedUrls = withContext(Dispatchers.IO) {
+            bitmaps.mapIndexed { index, bitmap ->
+                async {
+                    val parsedFile = bitmap.toFile(context, name + index)
+                    uploadImage(parsedFile)
+                }
+            }.awaitAll()
+        }
+
+        if (uploadedUrls.contains(null)) {
+            onError(uploadedUrls)
+        } else {
+            onSuccess(uploadedUrls)
+        }
+    }
+
+    private suspend fun uploadImage(file: File): String? = suspendCoroutine { continuation ->
         MediaManager.get().upload(file.path).option("folder", "image").callback(
             object : UploadCallback {
                 override fun onStart(requestId: String?) {
@@ -45,12 +66,12 @@ class CloudinaryModel {
                 override fun onSuccess(requestId: String?, resultData: MutableMap<*, *>) {
                     val url = resultData["secure_url"] as? String ?: ""
                     Log.d("TAG", "success")
-                    onSuccess(url)
+                    continuation.resume(url)
                 }
 
                 override fun onError(requestId: String?, error: ErrorInfo?) {
                     Log.d("TAG", "error")
-                    onError(error?.description ?: "unknown error")
+                    continuation.resume(null)
                 }
 
                 override fun onReschedule(requestId: String?, error: ErrorInfo?) {

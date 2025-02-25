@@ -6,5 +6,5 @@ data class Post(
     val tags: String,
     val description: String,
     val rating: Int,
-    val photoUrl: String? = null
+    val photoUrls: List<String?>? = null
 )

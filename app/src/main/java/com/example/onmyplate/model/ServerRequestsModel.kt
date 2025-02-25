@@ -2,34 +2,39 @@ package com.example.onmyplate.model
 
 import android.graphics.Bitmap
 import com.example.onmyplate.base.Constants
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 class ServerRequestsModel {
-    private val cloudinaryModel : CloudinaryModel = CloudinaryModel()
-    private val firebaseModel : FirebaseModel = FirebaseModel()
+    private val cloudinaryModel: CloudinaryModel = CloudinaryModel()
+    private val firebaseModel: FirebaseModel = FirebaseModel()
 
-    fun addPost(post: Post, image: Bitmap?) {
+    fun addPost(post: Post, images: MutableList<Bitmap>) {
         val postId = UUID.randomUUID().toString()
 
-        if(image == null) {
+        if (images.size == 0) {
             firebaseModel.addPost(postId, post)
         } else {
-            image.let {
-                // TODO: to support multi images, each name will have the postId + index
-                cloudinaryModel.uploadImage(
-                    bitmap=image,
-                    name=postId,
-                    onSuccess={uri ->
-                        if(!uri.isNullOrBlank()) {
-                            val postWithPhoto = post.copy(photoUrl = uri)
-                            firebaseModel.addPost(postId, postWithPhoto)
-                        }
-                    },
-                    onError= {
+            CoroutineScope(Dispatchers.IO).launch {
+                images.let {
+                    cloudinaryModel.uploadImages(
+                        bitmaps = images,
+                        name = postId,
+                        onSuccess = { urls ->
+                            if (urls.isNotEmpty()) {
+                                val postWithPhoto = post.copy(photoUrls = urls)
+                                firebaseModel.addPost(postId, postWithPhoto)
+                            }
+                        },
+                        onError = {
 
-                    }
-                )
+                        }
+                    )
+                }
             }
+
         }
     }
 }
