@@ -19,7 +19,6 @@ import com.example.onmyplate.model.ServerRequestsModel
 class SinglePostActivity : AppCompatActivity() {
     private lateinit var binding : ActivitySinglePostBinding
     private var cameraLauncher: ActivityResultLauncher<Void?>? = null
-    private var galleryLauncher: ActivityResultLauncher<String>? = null
     private var adapter: ImageRecyclerAdapter? = null
 
     private var photosArr: MutableList<Bitmap> = mutableListOf<Bitmap>()
@@ -47,11 +46,8 @@ class SinglePostActivity : AppCompatActivity() {
 
         }
 
-
-
         binding.recyclerView.adapter = adapter
 
-        // OPTION A: take a picture
         cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) {
                 bitmap ->
                 if (bitmap != null) {
@@ -64,15 +60,6 @@ class SinglePostActivity : AppCompatActivity() {
         binding.addPhotoButton.setOnClickListener {
             cameraLauncher?.launch(null)
         }
-
-        // OPTION B: open the gallery
-//        galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-//            binding.imageView.setImageURI(uri)
-//        }
-//
-//        binding.addPhotoButton.setOnClickListener {
-//            galleryLauncher?.launch("image/*")
-//        }
 
         binding.submitButton.setOnClickListener {
 

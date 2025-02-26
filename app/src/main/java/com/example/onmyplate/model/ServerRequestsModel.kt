@@ -1,7 +1,10 @@
 package com.example.onmyplate.model
 
 import android.graphics.Bitmap
+import android.net.Uri
+import android.widget.Toast
 import com.example.onmyplate.base.Constants
+import com.example.onmyplate.base.MyApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,7 +22,7 @@ class ServerRequestsModel {
         } else {
             CoroutineScope(Dispatchers.IO).launch {
                 images.let {
-                    cloudinaryModel.uploadImages(
+                    cloudinaryModel.uploadPostImages(
                         bitmaps = images,
                         name = postId,
                         onSuccess = { urls ->
@@ -36,5 +39,28 @@ class ServerRequestsModel {
             }
 
         }
+    }
+
+    fun addNewUser(user: User, profilePictureUrl: Bitmap?) {
+        if(profilePictureUrl == null) {
+            firebaseModel.createNewUser(user)
+        } else {
+            cloudinaryModel.uploadImage(
+                bitmap=profilePictureUrl,
+                name="",
+                folderName=Constants.CloudinaryFolders.PROFILE,
+                onSuccess={url ->
+                    if(!url.isNullOrBlank()) {
+                        val userWithProfilePicture = user.copy(profilePictureUrl = Uri.parse(url))
+                        firebaseModel.createNewUser(userWithProfilePicture)
+                    }
+                },
+                onError= {
+                    Toast.makeText(MyApplication.Globals.context, "ההרשמה נכשלה", Toast.LENGTH_SHORT).show()
+                }
+            )
+
+        }
+
     }
 }
