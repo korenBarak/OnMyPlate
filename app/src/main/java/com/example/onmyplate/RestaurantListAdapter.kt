@@ -23,7 +23,7 @@ class RestaurantListAdapter(private var restaurants: List<Post>?,
 
         fun bind(restaurant: Post?) {
             Picasso.get()
-                .load(restaurant?.photoUrl)
+                .load(restaurant?.photoUrls?.get(0))
                 .into(imageView)
 
             name.text = restaurant?.restaurantName
@@ -52,7 +52,7 @@ class RestaurantListAdapter(private var restaurants: List<Post>?,
 
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
         Picasso.get()
-            .load(restaurants?.get(position)?.photoUrl)
+            .load(restaurants?.get(position)?.photoUrls?.get(0))
             .into(holder?.imageView)
         holder.name.text = restaurants?.get(position)?.restaurantName
     }

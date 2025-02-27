@@ -21,6 +21,9 @@ class MainActivity : AppCompatActivity() {
     private var restaurants: List<Post>? = null
     private var adapter: RestaurantListAdapter? = null
 
+    val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+    val searchView: SearchView = findViewById(R.id.searchView)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -30,17 +33,11 @@ class MainActivity : AppCompatActivity() {
 //            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
 //            insets
 //        }
-        lifecycleScope.launch {
-            restaurants = ServerRequestsModel().getAllPosts()
-        }
 //        restaurants = listOf(
 //            Post(restaurantName = "jajaw",tags = "italian",description = "nice",rating = 2F,photoUrl = "mzy4dwjqs56ymhzzyenb"),
 //            Post(restaurantName = "jajas",tags = "italian",description = "nice",rating = 2F,photoUrl = "mzy4dwjqs56ymhzzyenb"),
 //            Post(restaurantName = "jajad",tags = "italian",description = "nice",rating = 2F,photoUrl = "mzy4dwjqs56ymhzzyenb"),
 //        )
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-        val searchView: SearchView = findViewById(R.id.searchView)
-
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         adapter = RestaurantListAdapter(restaurants) { restaurant ->
@@ -51,6 +48,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         recyclerView.adapter = adapter
+        getAllPosts()
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -62,6 +61,17 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getAllPosts()
+    }
+
+    private fun getAllPosts() {
+        ServerRequestsModel().getAllPosts {
+            adapter?.setFilteredList(it)
+        }
     }
 
     private fun filterList(query: String?) {
