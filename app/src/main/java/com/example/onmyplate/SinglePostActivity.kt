@@ -18,7 +18,7 @@ class SinglePostActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivitySinglePostBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+//        setContentView(binding.root)
 
         // OPTION A: take a picture
 //        cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) {
@@ -48,7 +48,7 @@ class SinglePostActivity : AppCompatActivity() {
                 restaurantName =  binding.restaurantTextField.text.toString(),
                 tags = binding.tagsTextField.text.toString(),
                 description =  binding.descriptionTextField.text.toString(),
-                rating =   5,
+                rating = 5F,
             )
 
             ServerRequestsModel().addPost(post, bitmap)

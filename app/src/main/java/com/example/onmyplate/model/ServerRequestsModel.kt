@@ -2,6 +2,7 @@ package com.example.onmyplate.model
 
 import android.graphics.Bitmap
 import com.example.onmyplate.base.Constants
+import kotlinx.coroutines.tasks.await
 import java.util.UUID
 
 class ServerRequestsModel {
@@ -30,6 +31,15 @@ class ServerRequestsModel {
                     }
                 )
             }
+        }
+    }
+
+    suspend fun getAllPosts(): List<Post> {
+        return try {
+            val snapshot = firebaseModel.getAllPosts().await()
+            snapshot.documents.mapNotNull { it.toObject(Post::class.java) }
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 }
