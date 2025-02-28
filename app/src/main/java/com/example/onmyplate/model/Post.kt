@@ -6,7 +6,7 @@ data class Post(
     val restaurantName: String,
     val tags: String,
     val description: String,
-    val rating: Float = 0.0f,
+    var rating: Float = 0.0f,
     val photoUrls: List<String?>? = null
 ){
     fun fromJSON(json: Map<String, Any>): Post {
