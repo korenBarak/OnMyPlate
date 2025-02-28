@@ -1,7 +1,6 @@
 package com.example.onmyplate.model
 
 import android.widget.Toast
-import android.util.Log
 import com.example.onmyplate.base.Constants
 import com.example.onmyplate.base.MyApplication
 import com.google.firebase.auth.auth
@@ -11,8 +10,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.ktx.firestore
-import kotlinx.coroutines.tasks.await
 typealias PostsCallback = (List<Post>) -> Unit
 
 class FirebaseModel {
