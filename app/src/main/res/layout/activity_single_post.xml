@@ -7,8 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".SinglePostActivity">
 
-
-
     <ImageView
         android:id="@+id/deleteButton"
         android:layout_width="24dp"
