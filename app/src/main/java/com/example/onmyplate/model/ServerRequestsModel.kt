@@ -5,6 +5,7 @@ import android.net.Uri
 import android.widget.Toast
 import com.example.onmyplate.base.Constants
 import com.example.onmyplate.base.MyApplication
+import com.example.onmyplate.base.PostsCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -59,8 +60,10 @@ class ServerRequestsModel {
                     Toast.makeText(MyApplication.Globals.context, "ההרשמה נכשלה", Toast.LENGTH_SHORT).show()
                 }
             )
-
         }
+    }
 
+     fun getAllPosts(callback: PostsCallback){
+         firebaseModel.getAllPosts(callback)
     }
 }

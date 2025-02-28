@@ -3,11 +3,14 @@ package com.example.onmyplate.model
 import android.widget.Toast
 import com.example.onmyplate.base.Constants
 import com.example.onmyplate.base.MyApplication
+import com.example.onmyplate.base.PostsCallback
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.QuerySnapshot
 
 class FirebaseModel {
     private val auth: FirebaseAuth = Firebase.auth
@@ -54,5 +57,16 @@ class FirebaseModel {
                 ).show()
             }
         }
+    }
+
+    fun getAllPosts(callback: PostsCallback): Task<QuerySnapshot> {
+        return db.collection(Constants.FirebaseCollections.POSTS).get()
+            .addOnSuccessListener { querySnapshot ->
+                        val fetchedPosts = querySnapshot.documents.mapNotNull { it.toObject(Post::class.java) }
+                        callback(fetchedPosts)
+                    }
+            .addOnFailureListener {
+                callback(listOf())
+            }
     }
 }

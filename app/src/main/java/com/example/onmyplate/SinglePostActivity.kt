@@ -67,7 +67,7 @@ class SinglePostActivity : AppCompatActivity() {
                restaurantName =  binding.restaurantTextField.text.toString(),
                tags = binding.tagsTextField.text.toString(),
                description =  binding.descriptionTextField.text.toString(),
-               rating =   5,
+               rating = 5F,
            )
 
            ServerRequestsModel().addPost(post, photosArr)
