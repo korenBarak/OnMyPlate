@@ -30,6 +30,7 @@ class RestaurantListActivity : AppCompatActivity(){
             // Handle row click, navigate to the details screen
             val intent = Intent(this, SinglePostActivity::class.java)
             intent.putExtra("restaurant_name", restaurant?.restaurantName)
+            intent.putExtra("restaurantTextField", restaurant?.tags)
             startActivity(intent)
         }
 
