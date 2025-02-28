@@ -3,6 +3,7 @@ package com.example.onmyplate.model
 import android.widget.Toast
 import com.example.onmyplate.base.Constants
 import com.example.onmyplate.base.MyApplication
+import com.example.onmyplate.base.PostsCallback
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
@@ -10,7 +11,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.QuerySnapshot
-typealias PostsCallback = (List<Post>) -> Unit
 
 class FirebaseModel {
     private val auth: FirebaseAuth = Firebase.auth
@@ -70,8 +70,3 @@ class FirebaseModel {
             }
     }
 }
-
-//            .whereEqualTo("tags", "תת").get()
-//            .addOnCompleteListener{Log.d("fv",
-//            it.result.toString()
-//        )}

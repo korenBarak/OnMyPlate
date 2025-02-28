@@ -1,6 +1,5 @@
-package com.example.onmyplate
+package com.example.onmyplate.adapter
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +7,7 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.onmyplate.R
 import com.example.onmyplate.model.Post
 import com.squareup.picasso.Picasso
 

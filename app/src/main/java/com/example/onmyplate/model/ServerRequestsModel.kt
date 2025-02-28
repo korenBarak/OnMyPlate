@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.Toast
 import com.example.onmyplate.base.Constants
-import kotlinx.coroutines.tasks.await
 import com.example.onmyplate.base.MyApplication
+import com.example.onmyplate.base.PostsCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
