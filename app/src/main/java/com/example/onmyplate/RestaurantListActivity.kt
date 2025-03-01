@@ -51,7 +51,7 @@ class RestaurantListActivity : AppCompatActivity(){
     }
 
     private fun getAllPosts() {
-        ServerRequestsModel().getAllPosts {
+        ServerRequestsModel.getAllPosts {
             adapter?.setFilteredList(it)
         }
     }

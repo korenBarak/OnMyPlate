@@ -11,9 +11,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class ServerRequestsModel {
+object ServerRequestsModel {
     private val cloudinaryModel: CloudinaryModel = CloudinaryModel()
     private val firebaseModel: FirebaseModel = FirebaseModel()
+
 
     fun addPost(post: Post, images: MutableList<Bitmap>) {
         val postId = UUID.randomUUID().toString()
@@ -65,5 +66,27 @@ class ServerRequestsModel {
 
      fun getAllPosts(callback: PostsCallback){
          firebaseModel.getAllPosts(callback)
+    }
+
+    fun updateUserDetails(user: User, bitmap: Bitmap) {
+        val pictureName = user.profilePictureUrl.toString().split("/${Constants.CloudinaryFolders.PROFILE}").last()
+        val pictureId = pictureName.split(".").first()
+
+        cloudinaryModel.updateImage(
+            bitmap=bitmap,
+            name=pictureId,
+            folderName=Constants.CloudinaryFolders.PROFILE,
+            onSuccess={url ->
+                if(!url.isNullOrBlank()) {
+                    val userWithProfilePicture = user.copy(profilePictureUrl = Uri.parse(url))
+
+                    firebaseModel.changeUserDetails(userWithProfilePicture)
+
+                }
+            },
+            onError= {
+                Toast.makeText(MyApplication.Globals.context, "ההרשמה נכשלה", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 }
