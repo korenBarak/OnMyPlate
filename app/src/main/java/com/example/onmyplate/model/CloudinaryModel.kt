@@ -1,8 +1,6 @@
 package com.example.onmyplate.model
 
 import android.graphics.Bitmap
-import android.net.Uri
-import android.util.Log
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
@@ -41,12 +39,13 @@ class CloudinaryModel {
         onError: (String?) -> Unit
     ) {
         val context = MyApplication.Globals.context ?: return
-        val file : File = bitmap.toFile(context, name)
+        val file: File = bitmap.toFile(context, name)
 
         MediaManager.get().upload(file.path).option("folder", folderName).callback(
             object : UploadCallback {
                 override fun onStart(requestId: String?) {
                 }
+
                 override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {
                 }
 
@@ -92,7 +91,44 @@ class CloudinaryModel {
     }
 
     private suspend fun suspendUploadImage(file: File): String? = suspendCoroutine { continuation ->
-        MediaManager.get().upload(file.path).option("folder", Constants.CloudinaryFolders.IMAGE).callback(
+        MediaManager.get().upload(file.path).option("folder", Constants.CloudinaryFolders.IMAGE)
+            .callback(
+                object : UploadCallback {
+                    override fun onStart(requestId: String?) {
+                    }
+
+                    override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {
+                    }
+
+                    override fun onSuccess(requestId: String?, resultData: MutableMap<*, *>) {
+                        val url = resultData["secure_url"] as? String ?: ""
+                        continuation.resume(url)
+                    }
+
+                    override fun onError(requestId: String?, error: ErrorInfo?) {
+                        continuation.resume(null)
+                    }
+
+                    override fun onReschedule(requestId: String?, error: ErrorInfo?) {
+                    }
+
+                },
+            )
+            .dispatch()
+
+    }
+
+    fun updateImage(
+        bitmap: Bitmap,
+        name: String,
+        folderName: String,
+        onSuccess: (String?) -> Unit,
+        onError: (String?) -> Unit
+    ) {
+        val context = MyApplication.Globals.context ?: return
+        val file: File = bitmap.toFile(context, "")
+
+        MediaManager.get().upload(file.path).option("folder", folderName).option("public_id", name).callback(
             object : UploadCallback {
                 override fun onStart(requestId: String?) {
                 }
@@ -102,11 +138,11 @@ class CloudinaryModel {
 
                 override fun onSuccess(requestId: String?, resultData: MutableMap<*, *>) {
                     val url = resultData["secure_url"] as? String ?: ""
-                    continuation.resume(url)
+                    onSuccess(url)
                 }
 
                 override fun onError(requestId: String?, error: ErrorInfo?) {
-                    continuation.resume(null)
+                    onError(error?.description ?: "unknown error")
                 }
 
                 override fun onReschedule(requestId: String?, error: ErrorInfo?) {
@@ -117,5 +153,4 @@ class CloudinaryModel {
             .dispatch()
 
     }
-
 }
