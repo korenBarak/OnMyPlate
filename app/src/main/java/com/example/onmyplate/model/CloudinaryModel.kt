@@ -20,9 +20,9 @@ import kotlin.coroutines.suspendCoroutine
 class CloudinaryModel {
     init {
         val config = mapOf(
-            "cloud_name" to BuildConfig.CLOUD_NAME,
-            "api_key" to BuildConfig.API_KEY,
-            "api_secret" to BuildConfig.API_SECRET
+            "cloud_name" to BuildConfig.CLOUDINARY_CLOUD_NAME,
+            "api_key" to BuildConfig.CLOUDINARY_API_KEY,
+            "api_secret" to BuildConfig.CLOUDINARY_API_SECRET
         )
 
         MyApplication.Globals.context?.let {

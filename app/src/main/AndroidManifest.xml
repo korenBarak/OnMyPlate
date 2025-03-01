@@ -14,9 +14,6 @@
         android:theme="@style/Theme.OnMyPlate"
         tools:targetApi="31">
         <activity
-            android:name=".ProfilePageActivity"
-            android:exported="false" />
-        <activity
             android:name=".SignPageActivity"
             android:exported="true">
             <intent-filter>
