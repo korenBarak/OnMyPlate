@@ -28,6 +28,7 @@ class RestaurantListActivity : AppCompatActivity(){
 
         adapter = RestaurantListAdapter(restaurants) { restaurant ->
             // Handle row click, navigate to the details screen
+            // change to restaurant card activity
             val intent = Intent(this, SinglePostActivity::class.java)
             intent.putExtra("restaurant_name", restaurant?.restaurantName)
             intent.putExtra("restaurantTextField", restaurant?.tags)
