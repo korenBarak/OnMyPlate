@@ -11,19 +11,17 @@ import com.example.onmyplate.base.PostsCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.concurrent.Executors
 import java.util.UUID
 
 object ServerRequestsModel {
     private val cloudinaryModel: CloudinaryModel = CloudinaryModel()
     private val firebaseModel: FirebaseModel = FirebaseModel()
-    private var executor = Executors.newSingleThreadExecutor()
 
     fun addPost(post: Post, images: MutableList<Bitmap>) {
         val postId = UUID.randomUUID().toString()
 
         if (images.size == 0) {
-            firebaseModel.addPost(postId, post)
+            firebaseModel.addPost(postId, post.copy(photoUrls = emptyList()))
         } else {
             CoroutineScope(Dispatchers.IO).launch {
                 images.let {
@@ -101,7 +99,7 @@ object ServerRequestsModel {
     }
 
     suspend fun getGoogleMapDetailsByPlaceName(placeName: String): List<GoogleApiPlace> {
-        return try {
+        try {
             val request =
                 GoogleApiClient.googleMapApiClient.getPlaceDetailsByName(placeName = placeName)
 
@@ -111,13 +109,13 @@ object ServerRequestsModel {
                 val body = response.body()
 
                 if (body?.status == "OK") {
-                    body.candidates ?: emptyList()
+                    return body.candidates
                 }
             }
-            emptyList()
+            return emptyList()
         } catch (e: Exception) {
             Log.d("ERROR", e.toString())
-            emptyList()
+            return emptyList()
         }
     }
 

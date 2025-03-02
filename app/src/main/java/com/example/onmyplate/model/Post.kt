@@ -7,14 +7,16 @@ data class Post(
     val tags: String,
     val description: String,
     var rating: Float = 0.0f,
-    val photoUrls: List<String?>? = null
-){
+    val photoUrls: List<String?>? = null,
+    val googleRating: Double = 0.0
+) {
     fun fromJSON(json: Map<String, Any>): Post {
         val userId = json["userId"] as? String ?: ""
         val restaurantName = json["restaurantName"] as? String ?: ""
         val tags = json["tags"] as? String ?: ""
         val description = json["description"] as? String ?: ""
         val rating = json["rating"] as? Float ?: 0.0f
+        val googleRating = json["googleRaring"] as? Double ?: 0.0
         val photoUrls = json["photoUrls"] as? List<String> ?: listOf()
 
         return Post(
@@ -23,7 +25,8 @@ data class Post(
             tags = tags,
             description = description,
             rating = rating,
-            photoUrls = photoUrls
+            photoUrls = photoUrls,
+            googleRating = googleRating
         )
     }
 }
