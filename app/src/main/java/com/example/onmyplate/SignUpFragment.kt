@@ -1,5 +1,6 @@
 package com.example.onmyplate
 
+import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -50,6 +51,7 @@ class SignUpFragment : Fragment() {
             val nameText = binding?.nameTextField?.text.toString()
             val emailText = binding?.emailTextField?.text.toString()
             val passwordText = binding?.passwordTextField?.text.toString()
+            val intent = Intent(requireContext(), RestaurantListActivity::class.java)
 
             if (nameText.isBlank() || emailText.isBlank()) {
                 Toast.makeText(activity, "יש למלא את כל הפרטים", Toast.LENGTH_SHORT).show()
@@ -74,6 +76,7 @@ class SignUpFragment : Fragment() {
                     )
 
                     viewModel.handleButtonClick(user, bitmap)
+                    startActivity(intent)
                 }
             }
         }
