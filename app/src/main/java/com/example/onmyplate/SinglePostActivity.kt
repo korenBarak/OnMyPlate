@@ -41,8 +41,6 @@ class SinglePostActivity : AppCompatActivity() {
                     adapter?.set(photosArr)
                 }
             }
-
-
         }
 
         binding.recyclerView.adapter = adapter
