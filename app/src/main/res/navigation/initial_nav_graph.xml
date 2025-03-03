@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/initial_nav_graph"
+    app:startDestination="@id/signPageActivity2">
+
+    <activity
+        android:id="@+id/signPageActivity2"
+        android:name="com.example.onmyplate.SignPageActivity"
+        android:label="activity_sign_page"
+        tools:layout="@layout/activity_sign_page" />
+</navigation>

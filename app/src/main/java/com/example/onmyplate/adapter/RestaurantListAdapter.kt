@@ -46,7 +46,7 @@ class RestaurantListAdapter(private var restaurants: List<Post>?,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RestaurantViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.activity_restaurant_list_item, parent, false)
+            .inflate(R.layout.fragment_restaurant_list_item, parent, false)
         return RestaurantViewHolder(view)
     }
 
