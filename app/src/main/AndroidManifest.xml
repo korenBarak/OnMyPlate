@@ -32,7 +32,7 @@
             android:exported="true">
         </activity>
         <activity
-            android:name=".RestaurantListItemActivity"
+            android:name=".RestaurantListItemFragment"
             android:exported="true" />
         <activity
             android:name=".MainActivity"

@@ -1,5 +1,6 @@
 package com.example.onmyplate
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.onmyplate.adapter.ImageRecyclerAdapter
 import com.example.onmyplate.databinding.ActivitySinglePostBinding
@@ -158,6 +160,8 @@ class SinglePostActivity : AppCompatActivity() {
 
             ServerRequestsModel.addPost(post, photosArr) {
                 binding.circularProgressBar.visibility = View.GONE
+                val intent = Intent(this, RestaurantListActivity::class.java)
+                startActivity(intent)
             }
         }
     }
