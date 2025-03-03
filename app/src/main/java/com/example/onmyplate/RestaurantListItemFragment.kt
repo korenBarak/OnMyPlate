@@ -1,22 +1,19 @@
 package com.example.onmyplate
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.example.onmyplate.databinding.FragmentRestaurantListItemBinding
 
 class RestaurantListItemFragment : Fragment() {
-    private var _binding: FragmentRestaurantListItemBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding : FragmentRestaurantListItemBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentRestaurantListItemBinding.inflate(inflater, container, false)
+    ): View {
+        binding = FragmentRestaurantListItemBinding.inflate(inflater, container, false)
 
         return binding.root
     }
