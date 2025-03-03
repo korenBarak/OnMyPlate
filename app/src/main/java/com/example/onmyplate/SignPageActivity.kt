@@ -3,7 +3,7 @@ package com.example.onmyplate
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import com.example.onmyplate.databinding.ActivitySignPageBinding
 
 class SignPageActivity : AppCompatActivity() {
@@ -18,24 +18,11 @@ class SignPageActivity : AppCompatActivity() {
         val toggleGroup = binding.signStatusToggle
         toggleGroup.check(binding.signUpButton.id)
 
-        loadFragment(SignUpFragment())
-
-        toggleGroup.addOnButtonCheckedListener {
-            _, checkedButtonId, isChecked ->
-            if(isChecked) {
-                if(checkedButtonId == binding.signUpButton.id)
-                    loadFragment(SignUpFragment())
-                else
-                    loadFragment(SignInFragment())
-            }
+        binding.signUpButton.setOnClickListener {
+            findNavController(R.id.nav_host_fragment).navigate(R.id.action_signInFragment_to_signUpFragment)
         }
-    }
-
-    private fun loadFragment(fragment: Fragment) {
-        // TODO: switch transaction way when navigation is uploaded
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container, fragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
+        binding.signInButton.setOnClickListener {
+            findNavController(R.id.nav_host_fragment).navigate(R.id.action_signUpFragment_to_signInFragment)
+        }
     }
 }
