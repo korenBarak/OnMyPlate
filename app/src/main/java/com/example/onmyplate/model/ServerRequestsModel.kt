@@ -17,11 +17,15 @@ object ServerRequestsModel {
     private val cloudinaryModel: CloudinaryModel = CloudinaryModel()
     private val firebaseModel: FirebaseModel = FirebaseModel()
 
-    fun addPost(post: Post, images: MutableList<Bitmap>) {
+    fun addPost(post: Post, images: MutableList<Bitmap>, callback: (Boolean) -> Unit) {
         val postId = UUID.randomUUID().toString()
 
         if (images.size == 0) {
             firebaseModel.addPost(postId, post.copy(photoUrls = emptyList()))
+                .addOnCompleteListener { task ->
+                    callback(task.isSuccessful)
+                }
+
         } else {
             CoroutineScope(Dispatchers.IO).launch {
                 images.let {
@@ -32,10 +36,13 @@ object ServerRequestsModel {
                             if (urls.isNotEmpty()) {
                                 val postWithPhoto = post.copy(photoUrls = urls)
                                 firebaseModel.addPost(postId, postWithPhoto)
+                                    .addOnCompleteListener { task ->
+                                        callback(task.isSuccessful)
+                                    }
                             }
                         },
                         onError = {
-
+                            callback(false)
                         }
                     )
                 }

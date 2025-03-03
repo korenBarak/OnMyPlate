@@ -1,9 +1,7 @@
 package com.example.onmyplate
 
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -35,19 +33,11 @@ class SinglePostActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+//        window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivitySinglePostBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val config = resources.configuration
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            if (config.layoutDirection == View.LAYOUT_DIRECTION_LTR) {
-                Log.d("something", "lter")
-            } else {
-                Log.d("something", "rtl")
-            }
-        }
 
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerView.layoutManager = layoutManager
@@ -79,7 +69,6 @@ class SinglePostActivity : AppCompatActivity() {
         }
 
         binding.submitButton.setOnClickListener {
-            val user = FirebaseModel().getUser()
             val restaurantName = binding.restaurantTextField.text.toString()
             val tags = binding.tagsTextField.text.toString()
             val description = binding.descriptionTextField.text.toString()
@@ -87,16 +76,16 @@ class SinglePostActivity : AppCompatActivity() {
             if (restaurantName.isBlank() || tags.isBlank() || description.isBlank()) {
                 toastWrapper("יש למלא את כל הפרטים")
             } else {
-                if (user != null) {
-                    coroutineScope.launch {
-                        val googlePlace = handleSearchPlaceName(restaurantName)
+                binding.circularProgressBar.visibility = View.VISIBLE
 
-                        if (googlePlace != null) {
-                            handleSaveRestaurant(googlePlace)
-                        }
+                coroutineScope.launch {
+                    val googlePlace = handleSearchPlaceName(restaurantName)
+
+                    if (googlePlace != null) {
+                        handleSaveRestaurant(googlePlace)
+                    } else {
+                        binding.circularProgressBar.visibility = View.GONE
                     }
-                } else {
-                    toastWrapper("חלה שגיאה, המשתמש לא נמצא")
                 }
             }
         }
@@ -167,9 +156,9 @@ class SinglePostActivity : AppCompatActivity() {
                 googleRating = roundedRating
             )
 
-            ServerRequestsModel.addPost(post, photosArr)
+            ServerRequestsModel.addPost(post, photosArr) {
+                binding.circularProgressBar.visibility = View.GONE
+            }
         }
-
-
     }
 }
