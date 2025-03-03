@@ -7,15 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".SinglePostActivity">
 
-    <ImageView
-        android:id="@+id/deleteButton"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/delete_icon"
-        android:layout_gravity="center_horizontal"
-        android:padding="4dp"/>
-
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/restaurantNameLayout"
         style="?attr/textInputOutlinedStyle"
@@ -31,9 +22,7 @@
         app:boxCornerRadiusTopStart="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerView">
-
-
+        app:layout_constraintTop_toBottomOf="@+id/addPhotoButton">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/restaurantTextField"
             android:layout_width="match_parent"
@@ -105,23 +94,26 @@
 
 
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/addPhotoButton"
+        style="?attr/materialIconButtonFilledTonalStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:src="@drawable/add_photo"
-        app:layout_constraintBottom_toBottomOf="@+id/descriptionLayout"
+        android:layout_margin="8dp"
+        app:icon="@drawable/add_photo"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="30dp"
         android:layout_width="match_parent"
         android:layout_height="195dp"
         android:orientation="horizontal"
-        android:scrollbars="horizontal"
+        android:scrollbars="none"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="@+id/tagsLayout"
         app:layout_constraintStart_toStartOf="parent"

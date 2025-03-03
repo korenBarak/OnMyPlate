@@ -1,7 +1,10 @@
 package com.example.onmyplate
 
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -37,6 +40,14 @@ class SinglePostActivity : AppCompatActivity() {
         binding = ActivitySinglePostBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val config = resources.configuration
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            if (config.layoutDirection == View.LAYOUT_DIRECTION_LTR) {
+                Log.d("something", "lter")
+            } else {
+                Log.d("something", "rtl")
+            }
+        }
 
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerView.layoutManager = layoutManager
