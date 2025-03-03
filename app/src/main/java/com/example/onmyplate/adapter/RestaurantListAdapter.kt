@@ -11,8 +11,9 @@ import com.example.onmyplate.R
 import com.example.onmyplate.model.Post
 import com.squareup.picasso.Picasso
 
-class RestaurantListAdapter(private var restaurants: List<Post>?,
-                            private val onRowClicked: (Post?) -> Unit
+class RestaurantListAdapter(
+    private var restaurants: List<Post>?,
+    private val onRowClicked: (Post?) -> Unit
 ) : RecyclerView.Adapter<RestaurantListAdapter.RestaurantViewHolder>() {
 
     inner class RestaurantViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -30,8 +31,8 @@ class RestaurantListAdapter(private var restaurants: List<Post>?,
             id.text = restaurant?.tags
             ratingBar.rating = (restaurant?.rating ?: 1) as Float
 
-            ratingBar.setOnRatingBarChangeListener {
-                    ratingBar, _, _ ->  restaurant?.rating = ratingBar.rating
+            ratingBar.setOnRatingBarChangeListener { ratingBar, _, _ ->
+                restaurant?.rating = ratingBar.rating
             }
 
             itemView.setOnClickListener {
@@ -40,7 +41,7 @@ class RestaurantListAdapter(private var restaurants: List<Post>?,
         }
     }
 
-    fun setRestaurants(restaurants:List<Post>?) {
+    fun setRestaurants(restaurants: List<Post>?) {
         this.restaurants = restaurants
     }
 
@@ -51,15 +52,17 @@ class RestaurantListAdapter(private var restaurants: List<Post>?,
     }
 
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
-        Picasso.get()
-            .load(restaurants?.get(position)?.photoUrls?.get(0))
-            .into(holder?.imageView)
+        if (restaurants?.get(position)?.photoUrls?.size != 0)
+            Picasso.get()
+                .load(restaurants?.get(position)?.photoUrls?.get(0))
+                .into(holder?.imageView)
+
         holder.name.text = restaurants?.get(position)?.restaurantName
     }
 
     override fun getItemCount(): Int = restaurants?.size ?: 0
 
-    fun setFilteredList(restaurants: List<Post>){
+    fun setFilteredList(restaurants: List<Post>) {
         this.restaurants = restaurants
         notifyDataSetChanged()
     }
