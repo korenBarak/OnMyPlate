@@ -106,7 +106,9 @@ class FirebaseModel {
         return db.collection(Constants.FirebaseCollections.POSTS).get()
             .addOnSuccessListener { querySnapshot ->
                 val fetchedPosts =
-                    querySnapshot.documents.mapNotNull { it.toObject(Post::class.java) }
+                    querySnapshot.documents.mapNotNull {
+                        it.toObject(Post::class.java)
+                    }
                 callback(fetchedPosts)
             }
             .addOnFailureListener {
