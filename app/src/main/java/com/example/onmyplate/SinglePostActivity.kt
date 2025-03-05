@@ -9,8 +9,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.example.onmyplate.adapter.ImageRecyclerAdapter
 import com.example.onmyplate.databinding.ActivitySinglePostBinding
 import com.example.onmyplate.adapter.onDeleteButtonClickListener
@@ -19,12 +20,15 @@ import com.example.onmyplate.model.GoogleApiPlace
 import com.example.onmyplate.model.Post
 import com.example.onmyplate.model.ServerRequestsModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.math.RoundingMode
+
+var MAX_PHOTOS = 5
 
 class SinglePostActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySinglePostBinding
@@ -35,7 +39,7 @@ class SinglePostActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-//        window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
+        window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivitySinglePostBinding.inflate(layoutInflater)
@@ -44,16 +48,28 @@ class SinglePostActivity : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerView.layoutManager = layoutManager
 
-        adapter = ImageRecyclerAdapter(photosArr)
+        adapter = ImageRecyclerAdapter(
+            photosArr,
+            findViewById(R.id.photoIndicatorTextView)
+        ).apply {
+            scrollListener(binding.recyclerView)
 
-        adapter?.onDeleteListener = object : onDeleteButtonClickListener {
-            override fun onItemClick(photo: Bitmap?) {
-                photo.let {
-                    photosArr.remove(photo)
-                    adapter?.set(photosArr)
+            onDeleteListener = object : onDeleteButtonClickListener {
+                override fun onItemClick(photo: Bitmap?) {
+                    photo.let {
+                        photosArr.remove(photo)
+                        adapter?.set(photosArr)
+
+                        if (photosArr.size < MAX_PHOTOS)
+                            binding.addPhotoButton.isEnabled = true
+                    }
                 }
             }
         }
+
+
+        val snapHelper = PagerSnapHelper()
+        snapHelper.attachToRecyclerView(binding.recyclerView)
 
         binding.recyclerView.adapter = adapter
 
@@ -62,6 +78,9 @@ class SinglePostActivity : AppCompatActivity() {
                 if (bitmap != null) {
                     photosArr.add(bitmap)
                     adapter?.set(photosArr)
+
+                    if (photosArr.size >= MAX_PHOTOS)
+                        binding.addPhotoButton.isEnabled = false
                 }
 
             }
@@ -154,7 +173,7 @@ class SinglePostActivity : AppCompatActivity() {
                 restaurantName = binding.restaurantTextField.text.toString(),
                 tags = binding.tagsTextField.text.toString(),
                 description = binding.descriptionTextField.text.toString(),
-                rating = 5F,
+                rating = binding.ratingBar.rating,
                 googleRating = roundedRating
             )
 
@@ -166,3 +185,4 @@ class SinglePostActivity : AppCompatActivity() {
         }
     }
 }
+
