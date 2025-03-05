@@ -14,4 +14,8 @@ object Constants {
         const val IMAGE = "image"
         const val PROFILE = "profile"
     }
+
+    object ApiBaseUrl {
+        const val GOOGLE_MAP = "https://maps.googleapis.com/maps/api/place/"
+    }
 }
