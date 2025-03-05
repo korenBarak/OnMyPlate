@@ -9,7 +9,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.onmyplate.adapter.ImageRecyclerAdapter
 import com.example.onmyplate.databinding.ActivitySinglePostBinding
@@ -26,6 +25,8 @@ import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.math.RoundingMode
 
+var MAX_PHOTOS = 5
+
 class SinglePostActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySinglePostBinding
     private var cameraLauncher: ActivityResultLauncher<Void?>? = null
@@ -35,7 +36,7 @@ class SinglePostActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-//        window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
+        window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivitySinglePostBinding.inflate(layoutInflater)
@@ -51,6 +52,9 @@ class SinglePostActivity : AppCompatActivity() {
                 photo.let {
                     photosArr.remove(photo)
                     adapter?.set(photosArr)
+
+                    if (photosArr.size < MAX_PHOTOS)
+                        binding.addPhotoButton.isEnabled = true
                 }
             }
         }
@@ -62,6 +66,9 @@ class SinglePostActivity : AppCompatActivity() {
                 if (bitmap != null) {
                     photosArr.add(bitmap)
                     adapter?.set(photosArr)
+
+                    if (photosArr.size >= MAX_PHOTOS)
+                        binding.addPhotoButton.isEnabled = false
                 }
 
             }
@@ -154,7 +161,7 @@ class SinglePostActivity : AppCompatActivity() {
                 restaurantName = binding.restaurantTextField.text.toString(),
                 tags = binding.tagsTextField.text.toString(),
                 description = binding.descriptionTextField.text.toString(),
-                rating = 5F,
+                rating = binding.ratingBar.rating,
                 googleRating = roundedRating
             )
 
@@ -166,3 +173,4 @@ class SinglePostActivity : AppCompatActivity() {
         }
     }
 }
+
