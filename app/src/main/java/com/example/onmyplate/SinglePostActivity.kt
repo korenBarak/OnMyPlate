@@ -10,6 +10,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.example.onmyplate.adapter.ImageRecyclerAdapter
 import com.example.onmyplate.databinding.ActivitySinglePostBinding
 import com.example.onmyplate.adapter.onDeleteButtonClickListener
@@ -18,6 +20,7 @@ import com.example.onmyplate.model.GoogleApiPlace
 import com.example.onmyplate.model.Post
 import com.example.onmyplate.model.ServerRequestsModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,19 +48,28 @@ class SinglePostActivity : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerView.layoutManager = layoutManager
 
-        adapter = ImageRecyclerAdapter(photosArr)
+        adapter = ImageRecyclerAdapter(
+            photosArr,
+            findViewById(R.id.photoIndicatorTextView)
+        ).apply {
+            scrollListener(binding.recyclerView)
 
-        adapter?.onDeleteListener = object : onDeleteButtonClickListener {
-            override fun onItemClick(photo: Bitmap?) {
-                photo.let {
-                    photosArr.remove(photo)
-                    adapter?.set(photosArr)
+            onDeleteListener = object : onDeleteButtonClickListener {
+                override fun onItemClick(photo: Bitmap?) {
+                    photo.let {
+                        photosArr.remove(photo)
+                        adapter?.set(photosArr)
 
-                    if (photosArr.size < MAX_PHOTOS)
-                        binding.addPhotoButton.isEnabled = true
+                        if (photosArr.size < MAX_PHOTOS)
+                            binding.addPhotoButton.isEnabled = true
+                    }
                 }
             }
         }
+
+
+        val snapHelper = PagerSnapHelper()
+        snapHelper.attachToRecyclerView(binding.recyclerView)
 
         binding.recyclerView.adapter = adapter
 
