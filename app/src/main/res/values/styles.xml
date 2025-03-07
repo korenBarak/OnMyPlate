@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomMaterialAlertDialogStyle" parent="ThemeOverlay.MaterialComponents.Dialog">
+        <item name="colorControlActivated">#6750A4</item>
+        <item name="colorPrimary">#6750A4</item>
+    </style>
+</resources>

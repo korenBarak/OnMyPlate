@@ -58,13 +58,17 @@ class FirebaseModel {
             .document(userId).set(user)
     }
 
-    private fun updateUserDetailsInDatabase(userId: String, name: String, profilePictureUrl: String) {
+    private fun updateUserDetailsInDatabase(
+        userId: String,
+        name: String,
+        profilePictureUrl: String
+    ) {
         db.collection(Constants.FirebaseCollections.USERS)
             .document(userId).update("name", name, "profilePictureUrl", profilePictureUrl)
     }
 
-    fun addPost(postId: String, post: Post) {
-        db.collection(Constants.FirebaseCollections.POSTS)
+    fun addPost(postId: String, post: Post): Task<Void> {
+        return db.collection(Constants.FirebaseCollections.POSTS)
             .document(postId)
             .set(post)
     }
@@ -119,7 +123,8 @@ class FirebaseModel {
             }
 
             currentUser.updateProfile(detailsToUpdate)
-            updateUserDetailsInDatabase(currentUser.uid, user.name,
+            updateUserDetailsInDatabase(
+                currentUser.uid, user.name,
                 user.profilePictureUrl.toString()
             )
         }
@@ -128,9 +133,12 @@ class FirebaseModel {
     fun getAllPosts(callback: PostsCallback): Task<QuerySnapshot> {
         return db.collection(Constants.FirebaseCollections.POSTS).get()
             .addOnSuccessListener { querySnapshot ->
-                        val fetchedPosts = querySnapshot.documents.mapNotNull { it.toObject(Post::class.java) }
-                        callback(fetchedPosts)
+                val fetchedPosts =
+                    querySnapshot.documents.mapNotNull {
+                        it.toObject(Post::class.java)
                     }
+                callback(fetchedPosts)
+            }
             .addOnFailureListener {
                 callback(listOf())
             }
