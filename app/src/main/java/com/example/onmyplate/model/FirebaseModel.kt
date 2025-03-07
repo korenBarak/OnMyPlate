@@ -1,9 +1,12 @@
 package com.example.onmyplate.model
 
+import android.net.Uri
 import android.widget.Toast
+import com.example.onmyplate.base.CommentsCallback
 import com.example.onmyplate.base.Constants
 import com.example.onmyplate.base.MyApplication
 import com.example.onmyplate.base.PostsCallback
+import com.example.onmyplate.base.UserCallback
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
@@ -11,6 +14,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 
 class FirebaseModel {
@@ -20,6 +25,29 @@ class FirebaseModel {
     fun getUser(): FirebaseUser? {
         return auth.currentUser
     }
+
+    fun getUserById(userId: String, callback: UserCallback): Task<DocumentSnapshot> {
+        return db.collection(Constants.FirebaseCollections.USERS).document(userId).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    var user = User()
+                    val profilePictureUrl = document.getString("profilePictureUrl")?.let { Uri.parse(it) }
+                    val name = document.getString("name")
+                    val email = document.getString("email")
+                    if (name != null && email != null){
+                        user = User("", email, name, profilePictureUrl)
+                    }
+                    callback(user)
+                } else {
+                    callback(null)
+                }
+            }
+                .addOnFailureListener { e ->
+                    e.printStackTrace()
+                    callback(null) // Handle failure
+                }
+        }
+
 
     fun signOutUser() {
         auth.signOut()
@@ -103,6 +131,17 @@ class FirebaseModel {
                         val fetchedPosts = querySnapshot.documents.mapNotNull { it.toObject(Post::class.java) }
                         callback(fetchedPosts)
                     }
+            .addOnFailureListener {
+                callback(listOf())
+            }
+    }
+
+    fun getCommentsByRestaurant(restaurantName: String, callback: CommentsCallback): Task<QuerySnapshot> {
+        return db.collection(Constants.FirebaseCollections.COMMENTS) .whereEqualTo("restaurantName", restaurantName).get()
+            .addOnSuccessListener { querySnapshot ->
+                val fetchedComments = querySnapshot.documents.mapNotNull { it.toObject(Comment::class.java) }
+                callback(fetchedComments)
+            }
             .addOnFailureListener {
                 callback(listOf())
             }

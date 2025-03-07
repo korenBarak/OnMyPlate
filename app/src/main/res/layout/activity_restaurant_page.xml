@@ -7,9 +7,46 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp">
-
+        <ImageView
+            android:id="@+id/userProfileImage"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/plate"
+            android:scaleType="centerCrop"
+            android:layout_marginEnd="8dp"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/restaurantName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="restaurantName"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/black" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/restaurantDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="restaurant discription"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/black" />
+        <RatingBar
+            android:id="@+id/starRatingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:stepSize="1.0"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
+            android:rating="0"
+            android:layout_gravity="center" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/commentsRecyclerView"
+            android:layout_width="390dp"
+            android:layout_height="430dp" />
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

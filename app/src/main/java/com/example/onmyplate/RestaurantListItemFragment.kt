@@ -26,6 +26,10 @@ class RestaurantListItemFragment : Fragment() {
         binding.starRatingBar.setOnRatingBarChangeListener {_, rating, _ ->
 //            Toast.makeText(this, "Selected Rating: $rating", Toast.LENGTH_SHORT).show()
         }
+        binding.restaurantCard.setOnClickListener{
+            val intent = Intent(requireContext(), RestaurantPageActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

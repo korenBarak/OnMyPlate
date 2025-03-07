@@ -3,6 +3,7 @@ package com.example.onmyplate.model
 import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.Toast
+import com.example.onmyplate.base.CommentsCallback
 import com.example.onmyplate.base.Constants
 import com.example.onmyplate.base.MyApplication
 import com.example.onmyplate.base.PostsCallback
@@ -66,6 +67,10 @@ object ServerRequestsModel {
 
      fun getAllPosts(callback: PostsCallback){
          firebaseModel.getAllPosts(callback)
+    }
+
+    fun getCommentsByRestaurant(restaurantName: String, callback: CommentsCallback){
+        firebaseModel.getCommentsByRestaurant(restaurantName, callback)
     }
 
     fun updateUserDetails(user: User, bitmap: Bitmap) {

@@ -27,7 +27,7 @@ class RestaurantListAdapter(private var restaurants: List<Post>?,
                 .into(imageView)
 
             name.text = restaurant?.restaurantName
-            id.text = restaurant?.tags
+            id.text = restaurant?.description
             ratingBar.rating = (restaurant?.rating ?: 1) as Float
 
             ratingBar.setOnRatingBarChangeListener {
@@ -51,10 +51,15 @@ class RestaurantListAdapter(private var restaurants: List<Post>?,
     }
 
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
-        Picasso.get()
-            .load(restaurants?.get(position)?.photoUrls?.get(0))
-            .into(holder?.imageView)
+        if (restaurants?.get(position)?.photoUrls?.size != 0)
+            Picasso.get()
+                .load(restaurants?.get(position)?.photoUrls?.get(0))
+                .into(holder?.imageView)
         holder.name.text = restaurants?.get(position)?.restaurantName
+        holder.id.text = restaurants?.get(position)?.description
+        holder.itemView.setOnClickListener {
+            onRowClicked(restaurants?.get(position))
+        }
     }
 
     override fun getItemCount(): Int = restaurants?.size ?: 0
