@@ -32,8 +32,9 @@
             android:exported="true">
         </activity>
         <activity
-            android:name=".RestaurantListItemFragment"
-            android:exported="true" />
+            android:name=".RestaurantPageActivity"
+            android:exported="true">
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true">
