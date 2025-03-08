@@ -3,6 +3,7 @@ package com.example.onmyplate
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
@@ -18,6 +19,9 @@ import com.example.onmyplate.databinding.ActivityRestaurantPageBinding
 import com.example.onmyplate.model.Comment
 import com.example.onmyplate.model.Post
 import com.example.onmyplate.model.ServerRequestsModel
+import com.example.onmyplate.model.ServerRequestsModel.addComment
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 import java.util.Locale
 
 class RestaurantPageActivity : AppCompatActivity(){
@@ -44,6 +48,8 @@ class RestaurantPageActivity : AppCompatActivity(){
         val restaurantNameView: TextView = this.findViewById(R.id.restaurantName)
         val restaurantDescriptionView: TextView = this.findViewById(R.id.restaurantDescription)
         val ratingBar: RatingBar = this.findViewById(R.id.starRatingBar)
+        val submitButton: Button = this.findViewById(R.id.submitCommentButton)
+        val commentInput: TextInputEditText = this.findViewById(R.id.commentEditText)
 
         restaurantNameView.text = restaurantName
         restaurantDescriptionView.text = restaurantDescription
@@ -53,11 +59,26 @@ class RestaurantPageActivity : AppCompatActivity(){
             intent.putExtra("description", comment?.description)
             intent.putExtra("ratingBar", comment?.rating)
         }
-        Log.d("RecyclerView", "List size: ${comments?.size}")
 
         recyclerView.adapter = adapter
         if (restaurantName != null) {
             getAllComments(restaurantName)
+        }
+
+        submitButton.setOnClickListener {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener
+            val commentText = commentInput.text.toString().trim()
+            val commentRating = binding.starRatingBar.rating
+            if(restaurantName != null){
+
+            val newComment = Comment(userId, restaurantName, commentText, commentRating)
+            if (commentText.isNotEmpty()) {
+                addComment(newComment)
+                commentInput.text?.clear() // Clear input field after submission
+            } else {
+                Toast.makeText(this, "Please enter a comment", Toast.LENGTH_SHORT).show()
+            }
+            }
         }
     }
 

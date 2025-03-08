@@ -77,6 +77,11 @@ object ServerRequestsModel {
         }
     }
 
+    fun addComment(comment: Comment) {
+        val commentId = UUID.randomUUID().toString()
+        firebaseModel.addComment(commentId, comment)
+    }
+
     fun getAllPosts(callback: PostsCallback) {
         firebaseModel.getAllPosts(callback)
     }

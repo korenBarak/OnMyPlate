@@ -43,6 +43,23 @@
             android:scaleY="0.5"
             android:rating="0"
             android:layout_gravity="center" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Write a comment...">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/commentEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/submitCommentButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Post Comment"
+                android:layout_gravity="end"
+                style="@style/Widget.MaterialComponents.Button"/>
+        </com.google.android.material.textfield.TextInputLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/commentsRecyclerView"
             android:layout_width="390dp"

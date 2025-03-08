@@ -154,4 +154,10 @@ class FirebaseModel {
                 callback(listOf())
             }
     }
+
+    fun addComment(commentId: String, comment: Comment): Task<Void>  {
+        return db.collection(Constants.FirebaseCollections.COMMENTS)
+            .document(commentId)
+            .set(comment)
+    }
 }
