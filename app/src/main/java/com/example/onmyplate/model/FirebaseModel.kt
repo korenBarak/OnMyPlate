@@ -115,4 +115,18 @@ class FirebaseModel {
                 callback(listOf())
             }
     }
+
+    fun getUsersPosts(callback: PostsCallback): Task<QuerySnapshot>{
+        return db.collection(Constants.FirebaseCollections.POSTS)
+            .whereEqualTo("userId", auth.currentUser?.uid).get().addOnSuccessListener { querySnapshot ->
+                val fetchedPosts =
+                    querySnapshot.documents.mapNotNull {
+                        it.toObject(Post::class.java)
+                    }
+                callback(fetchedPosts)
+            }
+            .addOnFailureListener {
+                callback(listOf())
+            }
+    }
 }

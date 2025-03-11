@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContentProviderCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.example.onmyplate.databinding.FragmentSignUpBinding
 import com.example.onmyplate.model.FirebaseModel
@@ -31,7 +33,14 @@ class SignUpFragment : Fragment() {
 
 //        FirebaseModel().signOutUser()
         val signedUser = FirebaseModel().getUser()
+
+        binding?.myRestaurantsButton?.setOnClickListener {
+            val intent = Intent(requireContext(), RestaurantListActivity::class.java)
+            intent.putExtra("DATA_TYPE", "user")
+            startActivity(intent)
+        }
         viewModel = if (signedUser == null) {
+            binding?.myRestaurantsButton?.isVisible = false
             ViewModelProvider(this)[SignUpViewModel::class.java]
         } else {
             ViewModelProvider(this)[EditProfileViewModel::class.java]
@@ -52,6 +61,7 @@ class SignUpFragment : Fragment() {
             val emailText = binding?.emailTextField?.text.toString()
             val passwordText = binding?.passwordTextField?.text.toString()
             val intent = Intent(requireContext(), RestaurantListActivity::class.java)
+            intent.putExtra("DATA_TYPE", "all")
 
             if (nameText.isBlank() || emailText.isBlank()) {
                 Toast.makeText(activity, "יש למלא את כל הפרטים", Toast.LENGTH_SHORT).show()

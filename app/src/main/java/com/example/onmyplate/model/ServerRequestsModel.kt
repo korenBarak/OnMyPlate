@@ -80,6 +80,10 @@ object ServerRequestsModel {
         firebaseModel.getAllPosts(callback)
     }
 
+    fun getUsersPosts(callback: PostsCallback){
+        firebaseModel.getUsersPosts(callback)
+    }
+
     fun updateUserDetails(user: User, bitmap: Bitmap) {
         val pictureName =
             user.profilePictureUrl.toString().split("/${Constants.CloudinaryFolders.PROFILE}")

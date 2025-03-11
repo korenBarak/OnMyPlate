@@ -1,10 +1,16 @@
 package com.example.onmyplate.viewModel
 
+import android.content.Intent
 import android.graphics.Bitmap
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModel
+import com.cloudinary.android.uploadwidget.UploadWidget.startActivity
 import com.example.onmyplate.R
+import com.example.onmyplate.RestaurantListActivity
 import com.example.onmyplate.databinding.FragmentSignUpBinding
+import com.example.onmyplate.model.FirebaseModel
 import com.example.onmyplate.model.ServerRequestsModel
 import com.example.onmyplate.model.User
 import com.google.firebase.auth.FirebaseUser
@@ -18,6 +24,7 @@ class EditProfileViewModel: ViewModel(), ProfileViewModel {
             binding?.emailTextField?.isEnabled = false
             binding?.passwordTextField?.isVisible = false
             binding?.signUpButton?.setText("עדכן פרופיל")
+            binding?.myRestaurantsButton?.isVisible = true
 
             if(it.photoUrl != null) {
                 Picasso.get()

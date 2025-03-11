@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.onmyplate.adapter.RestaurantListAdapter
 import com.example.onmyplate.model.Post
 import com.example.onmyplate.model.ServerRequestsModel
+import com.google.rpc.context.AttributeContext.Auth
 import java.util.Locale
 
 class RestaurantListActivity : AppCompatActivity(){
@@ -36,7 +37,11 @@ class RestaurantListActivity : AppCompatActivity(){
         }
 
         recyclerView.adapter = adapter
-        getAllPosts()
+        if(intent.getStringExtra("DATA_TYPE")!! == "all") {
+            getAllPosts()
+        }else {
+            getUsersPosts()
+        }
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -53,6 +58,12 @@ class RestaurantListActivity : AppCompatActivity(){
 
     private fun getAllPosts() {
         ServerRequestsModel.getAllPosts {
+            adapter?.setFilteredList(it)
+        }
+    }
+
+    private fun getUsersPosts() {
+        ServerRequestsModel.getUsersPosts {
             adapter?.setFilteredList(it)
         }
     }
