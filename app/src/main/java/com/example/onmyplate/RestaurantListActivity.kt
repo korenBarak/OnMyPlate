@@ -29,10 +29,12 @@ class RestaurantListActivity : AppCompatActivity(){
 
         adapter = RestaurantListAdapter(restaurants) { restaurant ->
             // Handle row click, navigate to the details screen
-            // change to restaurant card activity
-            val intent = Intent(this, SinglePostActivity::class.java)
-            intent.putExtra("restaurant_name", restaurant?.restaurantName)
-            intent.putExtra("restaurantTextField", restaurant?.tags)
+            val intent = Intent(this, RestaurantPageActivity::class.java)
+            intent.putExtra("restaurantName", restaurant?.restaurantName)
+            intent.putExtra("restaurantDescription", restaurant?.description)
+            intent.putExtra("rating", restaurant?.rating)
+//            intent.putExtra("image", restaurant?.photoUrls?.get(0))
+
             startActivity(intent)
         }
 

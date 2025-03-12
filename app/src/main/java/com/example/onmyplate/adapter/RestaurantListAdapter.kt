@@ -28,7 +28,7 @@ class RestaurantListAdapter(
                 .into(imageView)
 
             name.text = restaurant?.restaurantName
-            id.text = restaurant?.tags
+            id.text = restaurant?.description
             ratingBar.rating = (restaurant?.rating ?: 1) as Float
 
             ratingBar.setOnRatingBarChangeListener { ratingBar, _, _ ->
@@ -58,6 +58,10 @@ class RestaurantListAdapter(
                 .into(holder?.imageView)
 
         holder.name.text = restaurants?.get(position)?.restaurantName
+        holder.id.text = restaurants?.get(position)?.description
+        holder.itemView.setOnClickListener {
+            onRowClicked(restaurants?.get(position))
+        }
     }
 
     override fun getItemCount(): Int = restaurants?.size ?: 0

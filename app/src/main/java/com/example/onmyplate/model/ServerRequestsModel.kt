@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import com.example.onmyplate.apiRequests.GoogleApiClient
+import com.example.onmyplate.base.CommentsCallback
 import com.example.onmyplate.base.Constants
 import com.example.onmyplate.base.MyApplication
 import com.example.onmyplate.base.PostsCallback
@@ -76,12 +77,21 @@ object ServerRequestsModel {
         }
     }
 
+    fun addComment(comment: Comment) {
+        val commentId = UUID.randomUUID().toString()
+        firebaseModel.addComment(commentId, comment)
+    }
+
     fun getAllPosts(callback: PostsCallback) {
         firebaseModel.getAllPosts(callback)
     }
 
     fun getUsersPosts(callback: PostsCallback){
         firebaseModel.getUsersPosts(callback)
+    }
+
+    fun getCommentsByRestaurant(restaurantName: String, callback: CommentsCallback){
+        firebaseModel.getCommentsByRestaurant(restaurantName, callback)
     }
 
     fun updateUserDetails(user: User, bitmap: Bitmap) {
