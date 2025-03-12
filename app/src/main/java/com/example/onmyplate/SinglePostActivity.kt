@@ -180,6 +180,7 @@ class SinglePostActivity : AppCompatActivity() {
             ServerRequestsModel.addPost(post, photosArr) {
                 binding.circularProgressBar.visibility = View.GONE
                 val intent = Intent(this, RestaurantListActivity::class.java)
+                intent.putExtra("DATA_TYPE", "all")
                 startActivity(intent)
             }
         }

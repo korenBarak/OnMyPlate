@@ -86,6 +86,10 @@ object ServerRequestsModel {
         firebaseModel.getAllPosts(callback)
     }
 
+    fun getUsersPosts(callback: PostsCallback){
+        firebaseModel.getUsersPosts(callback)
+    }
+
     fun getCommentsByRestaurant(restaurantName: String, callback: CommentsCallback){
         firebaseModel.getCommentsByRestaurant(restaurantName, callback)
     }
