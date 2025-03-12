@@ -43,7 +43,11 @@
         android:name="com.example.onmyplate.RestaurantListItemFragment"
         android:label="RestaurantListItemFragment" >
         <action
-            android:id="@+id/action_restaurantListItemFragment_to_singlePostActivity"
-            app:destination="@id/singlePostActivity" />
+            android:id="@+id/action_restaurantListItemFragment_to_restaurantPageActivity"
+            app:destination="@id/restaurantPageActivity" />
     </fragment>
+    <activity
+        android:id="@+id/restaurantPageActivity"
+        android:name="com.example.onmyplate.RestaurantPageActivity"
+        android:label="RestaurantPageActivity" />
 </navigation>
