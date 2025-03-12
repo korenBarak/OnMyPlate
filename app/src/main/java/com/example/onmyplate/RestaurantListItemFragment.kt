@@ -9,14 +9,14 @@ import androidx.navigation.fragment.findNavController
 import com.example.onmyplate.databinding.FragmentRestaurantListItemBinding
 
 class RestaurantListItemFragment : Fragment() {
-    private lateinit var _binding: FragmentRestaurantListItemBinding
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentRestaurantListItemBinding
+//    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentRestaurantListItemBinding.inflate(inflater, container, false)
+    ): View {
+        binding = FragmentRestaurantListItemBinding.inflate(inflater, container, false)
 
         return binding.root
     }

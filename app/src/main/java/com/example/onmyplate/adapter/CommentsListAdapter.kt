@@ -14,8 +14,9 @@ import com.example.onmyplate.model.Post
 import com.example.onmyplate.model.User
 import com.squareup.picasso.Picasso
 
-class CommentsListAdapter (private var comments: List<Comment>?,
-                           private val onRowClicked: (Comment?) -> Unit
+class CommentsListAdapter(
+    private var comments: List<Comment>?,
+    private val onRowClicked: (Comment?) -> Unit
 ) : RecyclerView.Adapter<CommentsListAdapter.CommentViewHolder>() {
 
     inner class CommentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -26,42 +27,43 @@ class CommentsListAdapter (private var comments: List<Comment>?,
 
         fun bind(comment: Comment) {
             FirebaseModel().getUserById(comment.userId) { user ->
-            if (user != null){
-                Picasso.get()
-                    .load(user.profilePictureUrl)
-                    .into(imageView)
-                userName.text = user.name
+                if (user != null) {
+                    Picasso.get()
+                        .load(user.profilePictureUrl)
+                        .into(imageView)
+                    userName.text = user.name
+                }
             }
-        }
             description.text = comment.description
             ratingBar.rating = (comment.rating ?: 1) as Float
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.fragment_post_comment, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.fragment_post_comment, parent, false)
         return CommentViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
-        if( comments?.get(position) != null){
-        FirebaseModel().getUserById(comments!![position].userId){ user ->
-        if (user != null){
-            Picasso.get()
-                .load(user.profilePictureUrl)
-                .into(holder.imageView)
-            holder.userName.text = user.name
-            holder.description.text = comments!![position].description
-            holder.ratingBar.rating = comments!![position].rating
-        }}
+        if (comments?.get(position) != null) {
+            FirebaseModel().getUserById(comments!![position].userId) { user ->
+                if (user != null) {
+                    Picasso.get()
+                        .load(user.profilePictureUrl)
+                        .into(holder.imageView)
+                    holder.userName.text = user.name
+                    holder.description.text = comments!![position].description
+                    holder.ratingBar.rating = comments!![position].rating
+                }
+            }
         }
         holder.bind(comments!![position])
-
     }
 
     override fun getItemCount(): Int = comments?.size ?: 0
 
-    fun setComments(comments: List<Comment>){
+    fun setComments(comments: List<Comment>) {
         this.comments = comments
     }
 }
