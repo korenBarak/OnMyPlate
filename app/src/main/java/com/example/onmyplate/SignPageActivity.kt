@@ -15,13 +15,13 @@ class SignPageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivitySignPageBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         if (FirebaseModel().getUser() != null) {
             val intent = Intent(this, NavigationActivity::class.java)
             intent.putExtra("DATA_TYPE", "all")
             startActivity(intent)
         } else {
-            setContentView(binding.root)
 
             val toggleGroup = binding.signStatusToggle
             toggleGroup.check(binding.signUpButton.id)

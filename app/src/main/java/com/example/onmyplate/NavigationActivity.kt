@@ -17,8 +17,9 @@ class NavigationActivity : AppCompatActivity() {
 
         binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.restaurantListFragment -> replaceFragment(RestaurantListFragment(), intent.getStringExtra("DATA_TYPE"))
-                R.id.signUpFragment -> replaceFragment(SignUpFragment(), "")
+                R.id.homeFragment -> replaceFragment(RestaurantListFragment(), intent.getStringExtra("DATA_TYPE"))
+                R.id.searchFragment -> replaceFragment(RestaurantListFragment(), intent.getStringExtra("DATA_TYPE"))
+                R.id.profileFragment -> replaceFragment(SignUpFragment(), "")
 
                 else ->{
 

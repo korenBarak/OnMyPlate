@@ -22,7 +22,7 @@ class RestaurantPageFragment : Fragment() {
     private var comments: List<Comment>? = listOf()
     private var adapter: CommentsListAdapter? = null
     val args: RestaurantPageFragmentArgs by navArgs()
-    fun onCreateViewinflater(
+    override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {

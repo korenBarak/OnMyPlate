@@ -12,6 +12,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -55,7 +56,7 @@ class RestaurantListFragment : Fragment() {
             }
 //            val action = SignInFragmentDirections.actionSignInFragmentToRestaurantListFragment(restaurant!!.restaurantName, restaurant.description, restaurant.rating, firstPhoto ?: "")
             val action = RestaurantListFragmentDirections.actionRestaurantListFragmentToRestaurantPageFragment( restaurant!!.restaurantName, restaurant.description, restaurant.rating, firstPhoto ?: "" )
-            binding.materialCardView.findNavController().navigate(action)
+            NavHostFragment.findNavController(this).navigate(action)
         }
         val intent = Intent(context, NavigationActivity::class.java)
         recyclerView.adapter = adapter
