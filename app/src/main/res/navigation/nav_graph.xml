@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/signUpFragment">
+    app:startDestination="@id/signInFragment">
 
     <fragment
         android:id="@+id/signInFragment"
@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_signInFragment_to_signUpFragment"
             app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_restaurantListFragment"
+            app:destination="@id/restaurantListFragment" />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
@@ -23,11 +26,6 @@
             android:id="@+id/action_signUpFragment_to_signInFragment"
             app:destination="@id/signInFragment" />
     </fragment>
-    <activity
-        android:id="@+id/restaurantListActivity"
-        android:name="com.example.onmyplate.RestaurantListActivity"
-        android:label="activity_restaurant_list"
-        tools:layout="@layout/activity_restaurant_list" />
     <activity
         android:id="@+id/signPageActivity"
         android:name="com.example.onmyplate.SignPageActivity"
@@ -41,13 +39,47 @@
     <fragment
         android:id="@+id/restaurantListItemFragment"
         android:name="com.example.onmyplate.RestaurantListItemFragment"
-        android:label="RestaurantListItemFragment" >
+        android:label="RestaurantListItemFragment" />
+    <fragment
+        android:id="@+id/restaurantPageFragment"
+        android:name="com.example.onmyplate.RestaurantPageFragment"
+        android:label="RestaurantPageFragment">
         <action
-            android:id="@+id/action_restaurantListItemFragment_to_restaurantPageActivity"
-            app:destination="@id/restaurantPageActivity" />
+            android:id="@+id/action_restaurantPageFragment_to_restaurantListFragment"
+            app:destination="@id/restaurantListFragment" />
+        <argument
+            android:name="restaurantName"
+            app:argType="string" />
+        <argument
+            android:name="restaurantDescription"
+            app:argType="string" />
+        <argument
+            android:name="rating"
+            app:argType="float" />
+        <argument
+            android:name="image"
+            app:argType="string" />
     </fragment>
-    <activity
-        android:id="@+id/restaurantPageActivity"
-        android:name="com.example.onmyplate.RestaurantPageActivity"
-        android:label="RestaurantPageActivity" />
+    <fragment
+        android:id="@+id/restaurantListFragment"
+        android:name="com.example.onmyplate.RestaurantListFragment"
+        android:label="fragment_restaurant_list"
+        tools:layout="@layout/fragment_restaurant_list" >
+        <action
+            android:id="@+id/action_restaurantListFragment_to_restaurantPageFragment"
+            app:destination="@id/restaurantPageFragment" />
+        <argument
+            android:name="restaurantName"
+            android:name="restaurantName"
+            app:argType="string" />
+        <argument
+            android:name="restaurantDescription"
+            app:argType="string" />
+        <argument
+            android:name="rating"
+            app:argType="float" />
+        <argument
+            android:name="image"
+            app:argType="string" />
+    </fragment>
 </navigation>

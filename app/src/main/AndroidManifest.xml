@@ -17,10 +17,6 @@
         <activity
             android:name=".SignPageActivity"
             android:exported="true">
-        </activity>
-        <activity
-            android:name=".SinglePostActivity"
-            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,11 +24,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RestaurantListActivity"
+            android:name=".SinglePostActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name=".RestaurantPageActivity"
+            android:name=".NavigationActivity"
             android:exported="true">
         </activity>
         <activity
