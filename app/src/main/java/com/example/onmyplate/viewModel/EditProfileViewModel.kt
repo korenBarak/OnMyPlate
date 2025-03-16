@@ -18,7 +18,6 @@ class EditProfileViewModel: ViewModel(), ProfileViewModel {
             binding?.emailTextField?.isEnabled = false
             binding?.passwordTextField?.isVisible = false
             binding?.signUpButton?.setText("עדכן פרופיל")
-            binding?.myRestaurantsButton?.isVisible = true
 
             if(it.photoUrl != null) {
                 Picasso.get()

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/signUpFragment">
+    app:startDestination="@id/signInFragment">
 
     <fragment
         android:id="@+id/signInFragment"
@@ -40,45 +40,45 @@
 <!--        android:id="@+id/restaurantListItemFragment"-->
 <!--        android:name="com.example.onmyplate.RestaurantListItemFragment"-->
 <!--        android:label="RestaurantListItemFragment" />-->
-    <fragment
-        android:id="@+id/restaurantPageFragment"
-        android:name="com.example.onmyplate.RestaurantPageFragment"
-        android:label="RestaurantPageFragment">
-        <action
-            android:id="@+id/action_restaurantPageFragment_to_restaurantListFragment"
-            app:destination="@id/restaurantListFragment" />
-        <argument
-            android:name="restaurantName"
-            app:argType="string" />
-        <argument
-            android:name="restaurantDescription"
-            app:argType="string" />
-        <argument
-            android:name="rating"
-            app:argType="float" />
-        <argument
-            android:name="image"
-            app:argType="string" />
-    </fragment>
-    <fragment
-        android:id="@+id/restaurantListFragment"
-        android:name="com.example.onmyplate.RestaurantListFragment"
-        android:label="fragment_restaurant_list"
-        tools:layout="@layout/fragment_restaurant_list" >
-        <action
-            android:id="@+id/action_restaurantListFragment_to_restaurantPageFragment"
-            app:destination="@id/restaurantPageFragment" />
-        <argument
-            android:name="restaurantName"
-            app:argType="string" />
-        <argument
-            android:name="restaurantDescription"
-            app:argType="string" />
-        <argument
-            android:name="rating"
-            app:argType="float" />
-        <argument
-            android:name="image"
-            app:argType="string" />
-    </fragment>
+<!--    <fragment-->
+<!--        android:id="@+id/restaurantPageFragment"-->
+<!--        android:name="com.example.onmyplate.RestaurantPageFragment"-->
+<!--        android:label="RestaurantPageFragment">-->
+<!--        <action-->
+<!--            android:id="@+id/action_restaurantPageFragment_to_restaurantListFragment"-->
+<!--            app:destination="@id/restaurantListFragment" />-->
+<!--        <argument-->
+<!--            android:name="restaurantName"-->
+<!--            app:argType="string" />-->
+<!--        <argument-->
+<!--            android:name="restaurantDescription"-->
+<!--            app:argType="string" />-->
+<!--        <argument-->
+<!--            android:name="rating"-->
+<!--            app:argType="float" />-->
+<!--        <argument-->
+<!--            android:name="image"-->
+<!--            app:argType="string" />-->
+<!--    </fragment>-->
+<!--    <fragment-->
+<!--        android:id="@+id/restaurantListFragment"-->
+<!--        android:name="com.example.onmyplate.RestaurantListFragment"-->
+<!--        android:label="fragment_restaurant_list"-->
+<!--        tools:layout="@layout/fragment_restaurant_list" >-->
+<!--        <action-->
+<!--            android:id="@+id/action_restaurantListFragment_to_restaurantPageFragment"-->
+<!--            app:destination="@id/restaurantPageFragment" />-->
+<!--        <argument-->
+<!--            android:name="restaurantName"-->
+<!--            app:argType="string" />-->
+<!--        <argument-->
+<!--            android:name="restaurantDescription"-->
+<!--            app:argType="string" />-->
+<!--        <argument-->
+<!--            android:name="rating"-->
+<!--            app:argType="float" />-->
+<!--        <argument-->
+<!--            android:name="image"-->
+<!--            app:argType="string" />-->
+<!--    </fragment>-->
 </navigation>

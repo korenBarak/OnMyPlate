@@ -17,8 +17,8 @@ class NavigationActivity : AppCompatActivity() {
 
         binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.homeFragment -> replaceFragment(RestaurantListFragment(), intent.getStringExtra("DATA_TYPE"))
-                R.id.searchFragment -> replaceFragment(RestaurantListFragment(), intent.getStringExtra("DATA_TYPE"))
+                R.id.homeFragment -> replaceFragment(RestaurantListFragment(), "all")
+                R.id.searchFragment -> replaceFragment(RestaurantListFragment(), "user")
                 R.id.profileFragment -> replaceFragment(SignUpFragment(), "")
 
                 else ->{
@@ -37,9 +37,9 @@ class NavigationActivity : AppCompatActivity() {
 
         fragment.arguments = bundle
 
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.frame_layout, fragment)
-        fragmentTransaction.commit()
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.frame_layout, fragment)
+        transaction.addToBackStack(null) // <-- Optional: allows back navigation
+        transaction.commit()
     }
 }

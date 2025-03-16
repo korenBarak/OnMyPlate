@@ -33,13 +33,7 @@ class SignUpFragment : Fragment() {
 //        FirebaseModel().signOutUser()
         val signedUser = FirebaseModel().getUser()
 
-//        binding?.myRestaurantsButton?.setOnClickListener {
-//            val intent = Intent(requireContext(), RestaurantListFragment::class.java)
-//            intent.putExtra("DATA_TYPE", "user")
-//            startActivity(intent)
-//        }
         viewModel = if (signedUser == null) {
-            binding?.myRestaurantsButton?.isVisible = false
             ViewModelProvider(this)[SignUpViewModel::class.java]
         } else {
             ViewModelProvider(this)[EditProfileViewModel::class.java]
