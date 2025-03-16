@@ -42,23 +42,25 @@ class RestaurantListFragment : Fragment() {
 
         adapter = RestaurantListAdapter(restaurants) { restaurant ->
             // Handle row click, navigate to the details screen
-//            //ToDo make nav with nav graph
-
-//            intent.putExtra("restaurantName", restaurant?.restaurantName)
-//            intent.putExtra("restaurantDescription", restaurant?.description)
-//            intent.putExtra("rating", restaurant?.rating)
-////            intent.putExtra("image", restaurant?.photoUrls?.get(0))
-//
-//            startActivity(intent)
             var firstPhoto: String? = ""
             if(restaurant?.photoUrls?.size != 0) {
                 firstPhoto = restaurant?.photoUrls?.get(0)
             }
-//            val action = SignInFragmentDirections.actionSignInFragmentToRestaurantListFragment(restaurant!!.restaurantName, restaurant.description, restaurant.rating, firstPhoto ?: "")
-            val action = RestaurantListFragmentDirections.actionRestaurantListFragmentToRestaurantPageFragment( restaurant!!.restaurantName, restaurant.description, restaurant.rating, firstPhoto ?: "" )
-            NavHostFragment.findNavController(this).navigate(action)
+            val bundle = Bundle().apply {
+                putString("restaurantName", restaurant!!.restaurantName)
+                putFloat("rating", restaurant.rating)
+                putString("description", restaurant.description)
+                putString("photo", firstPhoto ?: "" )
+            }
+
+            val restaurantPageFragment = RestaurantPageFragment()
+            restaurantPageFragment.arguments = bundle
+
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.replace(R.id.frame_layout, restaurantPageFragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
         }
-        val intent = Intent(context, NavigationActivity::class.java)
         recyclerView.adapter = adapter
 
         if(arguments?.getString("DATA_TYPE") == "all") {

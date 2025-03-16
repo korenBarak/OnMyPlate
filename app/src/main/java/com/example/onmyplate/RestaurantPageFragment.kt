@@ -21,7 +21,7 @@ class RestaurantPageFragment : Fragment() {
     private lateinit var binding: FragmentRestaurantPageBinding
     private var comments: List<Comment>? = listOf()
     private var adapter: CommentsListAdapter? = null
-    val args: RestaurantPageFragmentArgs by navArgs()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,12 +33,11 @@ class RestaurantPageFragment : Fragment() {
 
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        val restaurantName = args.restaurantName
+        val restaurantName = arguments?.getString("restaurantName")
 
         binding.restaurantName.text = restaurantName
-        binding.restaurantDescription.text = args.restaurantDescription
-        binding.starRatingBar.rating = args.rating
-
+        binding.starRatingBar.rating = arguments?.getFloat("rating")!!
+        binding.restaurantDescription.text = arguments?.getString("description")
         adapter = CommentsListAdapter(comments) { comment ->
             intent.putExtra("description", comment?.description)
             intent.putExtra("ratingBar", comment?.rating)
