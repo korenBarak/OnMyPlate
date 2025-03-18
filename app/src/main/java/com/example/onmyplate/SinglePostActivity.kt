@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.example.onmyplate.adapter.ImageRecyclerAdapter
 import com.example.onmyplate.databinding.ActivitySinglePostBinding
 import com.example.onmyplate.adapter.onDeleteButtonClickListener
@@ -20,7 +19,6 @@ import com.example.onmyplate.model.GoogleApiPlace
 import com.example.onmyplate.model.Post
 import com.example.onmyplate.model.ServerRequestsModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -179,7 +177,7 @@ class SinglePostActivity : AppCompatActivity() {
 
             ServerRequestsModel.addPost(post, photosArr) {
                 binding.circularProgressBar.visibility = View.GONE
-                val intent = Intent(this, RestaurantListActivity::class.java)
+                val intent = Intent(this, NavigationActivity::class.java)
                 intent.putExtra("DATA_TYPE", "all")
                 startActivity(intent)
             }

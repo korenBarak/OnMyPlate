@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/signUpFragment">
+    app:startDestination="@id/signInFragment">
 
     <fragment
         android:id="@+id/signInFragment"
@@ -24,11 +24,6 @@
             app:destination="@id/signInFragment" />
     </fragment>
     <activity
-        android:id="@+id/restaurantListActivity"
-        android:name="com.example.onmyplate.RestaurantListActivity"
-        android:label="activity_restaurant_list"
-        tools:layout="@layout/activity_restaurant_list" />
-    <activity
         android:id="@+id/signPageActivity"
         android:name="com.example.onmyplate.SignPageActivity"
         android:label="activity_sign_page"
@@ -39,15 +34,20 @@
         android:label="activity_single_post"
         tools:layout="@layout/activity_single_post" />
     <fragment
+        android:id="@+id/restaurantListFragment2"
+        android:name="com.example.onmyplate.RestaurantListFragment"
+        android:label="fragment_restaurant_list"
+        tools:layout="@layout/fragment_restaurant_list" />
+    <fragment
         android:id="@+id/restaurantListItemFragment"
         android:name="com.example.onmyplate.RestaurantListItemFragment"
-        android:label="RestaurantListItemFragment" >
-        <action
-            android:id="@+id/action_restaurantListItemFragment_to_restaurantPageActivity"
-            app:destination="@id/restaurantPageActivity" />
-    </fragment>
+        android:label="RestaurantListItemFragment" />
+    <fragment
+        android:id="@+id/restaurantPageFragment2"
+        android:name="com.example.onmyplate.RestaurantPageFragment"
+        android:label="RestaurantPageFragment" />
     <activity
-        android:id="@+id/restaurantPageActivity"
-        android:name="com.example.onmyplate.RestaurantPageActivity"
-        android:label="RestaurantPageActivity" />
+        android:id="@+id/navigationActivity"
+        android:name="com.example.onmyplate.NavigationActivity"
+        android:label="NavigationActivity" />
 </navigation>

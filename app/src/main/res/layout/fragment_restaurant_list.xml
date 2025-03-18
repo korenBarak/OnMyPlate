@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/restaurantList"
-    tools:context=".RestaurantListActivity">
-
+    tools:context=".RestaurantListFragment">
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/materialCardView"
         android:layout_width="0dp"
@@ -25,7 +24,7 @@
             android:layout_height="wrap_content"
             app:iconifiedByDefault="false"
             app:queryBackground="@android:color/transparent"
-            app:queryHint="Search here ..." />
+            app:queryHint="חפש כאן ..." />
 
     </com.google.android.material.card.MaterialCardView>
 

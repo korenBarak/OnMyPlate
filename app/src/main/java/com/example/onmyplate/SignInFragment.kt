@@ -22,7 +22,7 @@ class SignInFragment : Fragment() {
         binding?.signInButton?.setOnClickListener {
             val email = binding?.emailTextField?.text.toString()
             val password = binding?.passwordTextField?.text.toString()
-            val intent = Intent(requireContext(), RestaurantListActivity::class.java)
+            val intent = Intent(requireContext(), NavigationActivity::class.java)
             intent.putExtra("DATA_TYPE", "all")
             if (email.isEmpty() || password.isEmpty())
                 Toast.makeText(activity, "יש למלא את כל הפרטים הנדרשים", Toast.LENGTH_SHORT).show()
