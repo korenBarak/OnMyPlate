@@ -34,17 +34,6 @@
                 android:textStyle="bold"
                 android:textSize="14sp"
                 android:textColor="@android:color/black"/>
-            <RatingBar
-                android:id="@+id/commentRatingBar"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:numStars="5"
-                android:stepSize="1.0"
-                android:scaleX="0.3"
-                android:scaleY="0.3"
-                android:rating="0"
-                android:layout_gravity="center"
-                />
         </LinearLayout>
 
         <com.google.android.material.textview.MaterialTextView

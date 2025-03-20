@@ -9,7 +9,6 @@ import com.example.onmyplate.databinding.FragmentRestaurantListItemBinding
 
 class RestaurantListItemFragment : Fragment() {
     private lateinit var binding: FragmentRestaurantListItemBinding
-//    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -22,10 +21,7 @@ class RestaurantListItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.starRatingBar.setOnRatingBarChangeListener {_, rating, _ ->
-//            Toast.makeText(this, "Selected Rating: $rating", Toast.LENGTH_SHORT).show()
-        }
-        binding.restaurantCard.setOnClickListener{
+        binding.restaurantCard.setOnClickListener {
             val intent = Intent(requireContext(), RestaurantPageFragment::class.java)
             startActivity(intent)
         }
