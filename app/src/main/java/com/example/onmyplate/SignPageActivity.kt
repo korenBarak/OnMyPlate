@@ -24,13 +24,14 @@ class SignPageActivity : AppCompatActivity() {
         } else {
             setContentView(binding.root)
             val toggleGroup = binding.signStatusToggle
-            toggleGroup.check(binding.signUpButton.id)
+            toggleGroup.check(binding.signInButton.id)
 
             binding.signUpButton.setOnClickListener {
                 findNavController(R.id.nav_host_fragment).navigate(R.id.action_signInFragment_to_signUpFragment)
             }
+
             binding.signInButton.setOnClickListener {
-                findNavController(R.id.nav_host_fragment).navigate(R.id.action_signUpFragment_to_signInFragment)
+                 findNavController(R.id.nav_host_fragment).navigate(R.id.action_signUpFragment_to_signInFragment)
             }
         }
     }

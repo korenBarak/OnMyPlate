@@ -10,8 +10,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import com.example.onmyplate.base.MyApplication
 import com.example.onmyplate.databinding.FragmentSignUpBinding
 import com.example.onmyplate.model.FirebaseModel
 import com.example.onmyplate.model.User
@@ -30,7 +30,6 @@ class SignUpFragment : Fragment() {
     ): View? {
         binding = FragmentSignUpBinding.inflate(inflater, container, false)
 
-//        FirebaseModel().signOutUser()
         val signedUser = FirebaseModel().getUser()
 
         viewModel = if (signedUser == null) {
@@ -47,6 +46,12 @@ class SignUpFragment : Fragment() {
 
         binding?.changePictureButton?.setOnClickListener {
             galleryLauncher?.launch("image/*")
+        }
+
+        binding?.logOutButton?.setOnClickListener {
+            FirebaseModel().signOutUser()
+            val intent = Intent(MyApplication.Globals.context, SignPageActivity::class.java)
+            startActivity(intent)
         }
 
         binding?.signUpButton?.setOnClickListener {
