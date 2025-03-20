@@ -33,5 +33,16 @@ data class Post(
                 googleRating = googleRating
             )
         }
+
+        fun toMap(post: Post): Map<String, Any> {
+            return mapOf(
+                "restaurantName" to post.restaurantName,
+                "tags" to post.tags,
+                "description" to post.description,
+                "rating" to post.rating,
+                "photoUrls" to (post.photoUrls ?: listOf()),
+                "googleRating" to (post.googleRating ?: 0.0)
+            )
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import com.example.onmyplate.adapter.ImageData
 import com.example.onmyplate.apiRequests.GoogleApiClient
 import com.example.onmyplate.base.CommentsCallback
 import com.example.onmyplate.base.Constants
@@ -14,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-object ServerRequestsModel  {
+object ServerRequestsModel {
     private val cloudinaryModel: CloudinaryModel = CloudinaryModel()
     private val firebaseModel: FirebaseModel = FirebaseModel.shared
 
@@ -31,7 +32,7 @@ object ServerRequestsModel  {
                             val postWithPhoto = post.copy(photoUrls = urls)
                             firebaseModel.addPost(postId, postWithPhoto)
                                 .addOnCompleteListener { task ->
-                                    callback(postWithPhoto.copy(postId=postId))
+                                    callback(postWithPhoto.copy(postId = postId))
                                 }
                         }
                     },
@@ -41,8 +42,58 @@ object ServerRequestsModel  {
                 )
             }
         }
+    }
 
+    fun updatePost(
+        postId: String,
+        post: Post,
+        imagesToSave: MutableList<Bitmap>,
+        allPhotos: List<ImageData>,
+        callback: (Post?) -> Unit
+    ) {
+        if (imagesToSave.size == 0) {
+            val postWithPhotos = post.copy(
+                photoUrls = allPhotos.filterIsInstance<ImageData.StringData>()
+                    .map { photo -> photo.url })
+            firebaseModel.updatePost(
+                postId,
+                postWithPhotos
+            ).addOnCompleteListener {
+                callback(postWithPhotos.copy(postId = postId))
+            }
+        } else {
+            CoroutineScope(Dispatchers.IO).launch {
+                imagesToSave.let {
+                    cloudinaryModel.uploadPostImages(
+                        bitmaps = imagesToSave,
+                        name = postId,
+                        onSuccess = { urls ->
+                            if (urls.isNotEmpty()) {
+                                var index = 0
+                                val photoUrls = mutableListOf<String>()
+                                allPhotos.forEach {
+                                    if (it is ImageData.StringData)
+                                        photoUrls.add(it.url)
+                                    else {
+                                        urls[index]?.let { url -> photoUrls.add(url) }
+                                        index++
+                                    }
+                                }
 
+                                val postWithPhoto = post.copy(photoUrls = photoUrls)
+                                firebaseModel.updatePost(postId, postWithPhoto)
+                                    .addOnCompleteListener {
+                                        callback(postWithPhoto.copy(postId = postId))
+                                    }
+                            }
+                        },
+                        onError = {
+                            callback(null)
+                        }
+                    )
+                }
+            }
+        }
     }
 
     fun addNewUser(user: User, profilePictureUrl: Bitmap?) {

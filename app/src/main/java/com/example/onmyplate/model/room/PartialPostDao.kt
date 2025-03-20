@@ -16,4 +16,7 @@ public interface PartialPostDao {
 
     @Delete
     fun delete(partialPost: PartialPost)
+
+    @Query("DELETE FROM PartialPost WHERE id = :partialPostId")
+    fun deleteById(partialPostId: String)
 }

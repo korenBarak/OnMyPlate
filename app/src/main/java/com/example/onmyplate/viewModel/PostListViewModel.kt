@@ -46,4 +46,15 @@ class PostListViewModel : ViewModel() {
         mutableList.add(post)
         _postList.value = mutableList
     }
+
+    fun updatePost(post: Post) {
+        val mutableList = _postList.value?.toMutableList() ?: mutableListOf()
+        val postIndex = mutableList.indexOfFirst { it.postId == post.postId }
+
+        if (postIndex != -1) {
+            mutableList[postIndex] = post
+        }
+
+        _postList.value = mutableList
+    }
 }

@@ -193,6 +193,7 @@ class SinglePostFragment : Fragment() {
     }
 
     private fun handleSaveRestaurant(googlePlace: GoogleApiPlace) {
+        binding.circularProgressBar.visibility = View.VISIBLE
         val user = FirebaseModel.shared.getUser()
 
         if (user == null) {
@@ -212,29 +213,54 @@ class SinglePostFragment : Fragment() {
                 googleRating = roundedRating
             )
 
-            val bitmapPhotos: List<Bitmap> = photosArr.filterIsInstance<ImageData.BitmapData>().map { photo -> photo.bitmap }
+            val bitmapPhotos: List<Bitmap> =
+                photosArr.filterIsInstance<ImageData.BitmapData>().map { photo -> photo.bitmap }
 
-            if(isNewPost) {
+            if (isNewPost) {
+                deletePostFromRoom()
                 ServerRequestsModel.addPost(post, bitmapPhotos.toMutableList()) {
-                    if(it != null)
+                    if (it != null)
                         postListViewModel?.addPost(it)
+                    else
+                        Toast.makeText(
+                            MyApplication.Globals.context,
+                            "הוספת הפוסט נכשלה",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                    binding.circularProgressBar.visibility = View.GONE
+                    requireActivity().supportFragmentManager.popBackStack()
+                }
+            } else {
+                ServerRequestsModel.updatePost(
+                    arguments?.getString("postId").toString(),
+                    post,
+                    bitmapPhotos.toMutableList(),
+                    photosArr
+                ) {
+                    if (it != null)
+                        postListViewModel?.updatePost(it)
+                    else
+                        Toast.makeText(
+                            MyApplication.Globals.context,
+                            "עדכון הפוסט נכשל",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
                     binding.circularProgressBar.visibility = View.GONE
                     requireActivity().supportFragmentManager.popBackStack()
                 }
             }
+        }
 
+        binding.circularProgressBar.visibility = View.GONE
+    }
 
-            // TODO: handle photosArr to bitmap or something , photosArr
-//             val newArr: List<ImageData.BitmapData> =  photosArr.filter{photo -> photo is ImageData.BitmapData}
+    private fun deletePostFromRoom() {
+        generatedId = ""
 
-//            ServerRequestsModel.addPost(post, mutableListOf()) {
-//                binding.circularProgressBar.visibility = View.GONE
-//                // back one level
-////                val intent = Intent(this, NavigationActivity::class.java)
-////                intent.putExtra("DATA_TYPE", "all")
-////                startActivity(intent)
-//            }
+        CoroutineScope(Dispatchers.IO).launch {
+            AppLocalDb.database.partialPostData().deleteById(generatedId)
         }
     }
 
@@ -253,6 +279,7 @@ class SinglePostFragment : Fragment() {
 
                     }
 
+                    generatedId = partialPost.id
                     AppLocalDb.database.partialPostData().delete(partialPost)
                 }
             }
@@ -272,7 +299,7 @@ class SinglePostFragment : Fragment() {
     }
 
     private fun handleInputChange() {
-        if (isNewPost) {
+        if (isNewPost && generatedId.isNotEmpty()) {
             CoroutineScope(Dispatchers.IO).launch {
                 AppLocalDb.database.partialPostData().insertData(
                     PartialPost(

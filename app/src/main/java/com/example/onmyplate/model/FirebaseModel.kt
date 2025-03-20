@@ -1,6 +1,7 @@
 package com.example.onmyplate.model
 
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -81,7 +82,12 @@ class FirebaseModel private constructor() {
     fun addPost(postId: String, post: Post): Task<Void> {
         return db.collection(Constants.FirebaseCollections.POSTS)
             .document(postId)
-            .set(post)
+            .set(Post.toMap(post))
+    }
+
+    fun updatePost (postId: String, post: Post) : Task<Void> {
+        return db.collection(Constants.FirebaseCollections.POSTS)
+            .document(postId).update(Post.toMap(post))
     }
 
     fun createNewUser(user: User):
