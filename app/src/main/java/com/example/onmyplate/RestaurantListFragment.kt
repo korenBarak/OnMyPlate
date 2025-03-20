@@ -1,25 +1,16 @@
 package com.example.onmyplate
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.onmyplate.adapter.RestaurantListAdapter
 import com.example.onmyplate.databinding.FragmentRestaurantListBinding
-import com.example.onmyplate.databinding.FragmentRestaurantListItemBinding
-import com.example.onmyplate.databinding.FragmentSignInBinding
 import com.example.onmyplate.model.Post
 import com.example.onmyplate.model.ServerRequestsModel
 import java.util.Locale
@@ -32,7 +23,7 @@ class RestaurantListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View{
+    ): View {
         binding = FragmentRestaurantListBinding.inflate(inflater, container, false)
 
         val recyclerView: RecyclerView = binding.recyclerView
@@ -40,18 +31,14 @@ class RestaurantListFragment : Fragment() {
 
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        adapter = RestaurantListAdapter(restaurants) { restaurant ->
-            // Handle row click, navigate to the details screen
-            var firstPhoto: String? = ""
-            if(restaurant?.photoUrls?.size != 0) {
-                firstPhoto = restaurant?.photoUrls?.get(0)
-            }
-            val bundle = Bundle().apply {
-                putString("restaurantName", restaurant!!.restaurantName)
-                putFloat("rating", restaurant.rating)
-                putString("description", restaurant.description)
-                putString("photo", firstPhoto ?: "" )
-            }
+        var isAbleToModify = arguments?.getString("DATA_TYPE") != "all"
+
+        adapter = RestaurantListAdapter(
+            restaurants,
+            isAbleToModify,
+            { goToEditPost(it) },
+            { deletePost(it) }) { restaurant ->
+            val bundle = postAsBundleArguments(restaurant)
 
             val restaurantPageFragment = RestaurantPageFragment()
             restaurantPageFragment.arguments = bundle
@@ -63,9 +50,9 @@ class RestaurantListFragment : Fragment() {
         }
         recyclerView.adapter = adapter
 
-        if(arguments?.getString("DATA_TYPE") == "all") {
+        if (arguments?.getString("DATA_TYPE") == "all") {
             getAllPosts()
-        }else {
+        } else {
             getUsersPosts()
         }
 
@@ -81,7 +68,49 @@ class RestaurantListFragment : Fragment() {
 
         })
 
+        binding.addPostButton.setOnClickListener {
+            val addPostFragment = SinglePostFragment()
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.replace(R.id.frame_layout, addPostFragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
+
         return binding.root
+    }
+
+    private fun goToEditPost(post: Post?) {
+        val addPostFragment = SinglePostFragment()
+        addPostFragment.arguments = postAsBundleArguments(post)
+
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.replace(R.id.frame_layout, addPostFragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
+
+    private fun deletePost(postId: String?) {
+        if (postId != null)
+            ServerRequestsModel.deletePost(postId)
+    }
+
+    private fun postAsBundleArguments(post: Post?): Bundle {
+        if (post != null) {
+            return Bundle().apply {
+                putString("restaurantName", post.restaurantName)
+                putString("tags", post.tags)
+                putString("postId", post.postId)
+                putFloat("rating", post.rating)
+                putDouble("googleRating", post.googleRating ?: 0.0)
+                putString("description", post.description)
+                putStringArray(
+                    "photos",
+                    post.photoUrls?.filterNotNull()?.toTypedArray() ?: arrayOf()
+                )
+            }
+        }
+
+        return Bundle()
     }
 
     private fun getAllPosts() {
