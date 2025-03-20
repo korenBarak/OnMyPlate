@@ -7,17 +7,21 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.onmyplate.adapter.RestaurantListAdapter
 import com.example.onmyplate.databinding.FragmentRestaurantListBinding
+import com.example.onmyplate.model.FirebaseModel
 import com.example.onmyplate.model.Post
-import com.example.onmyplate.model.ServerRequestsModel
+import com.example.onmyplate.viewModel.PostListViewModel
+import com.google.firebase.auth.FirebaseUser
 import java.util.Locale
 
 class RestaurantListFragment : Fragment() {
     private var restaurants: List<Post>? = listOf()
     private var adapter: RestaurantListAdapter? = null
+    private var postListViewModel: PostListViewModel? = null
     private lateinit var binding: FragmentRestaurantListBinding
 
     override fun onCreateView(
@@ -25,13 +29,14 @@ class RestaurantListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentRestaurantListBinding.inflate(inflater, container, false)
+        postListViewModel = ViewModelProvider(requireActivity()).get(PostListViewModel::class.java)
 
         val recyclerView: RecyclerView = binding.recyclerView
         val searchView: SearchView = binding.searchView
 
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        var isAbleToModify = arguments?.getString("DATA_TYPE") != "all"
+        val isAbleToModify = arguments?.getString("DATA_TYPE") != "all"
 
         adapter = RestaurantListAdapter(
             restaurants,
@@ -90,8 +95,10 @@ class RestaurantListFragment : Fragment() {
     }
 
     private fun deletePost(postId: String?) {
-        if (postId != null)
-            ServerRequestsModel.deletePost(postId)
+        if (postId != null) {
+            postListViewModel?.deletePost(postId)
+            binding.searchView.setQuery("", true)
+        }
     }
 
     private fun postAsBundleArguments(post: Post?): Bundle {
@@ -114,14 +121,30 @@ class RestaurantListFragment : Fragment() {
     }
 
     private fun getAllPosts() {
-        ServerRequestsModel.getAllPosts {
+        binding.circularProgressBar.visibility = View.VISIBLE
+
+        postListViewModel?.postList?.observe(viewLifecycleOwner) {
+            restaurants = it
             adapter?.setFilteredList(it)
+        }
+
+        postListViewModel?.loadingState?.observe(viewLifecycleOwner) {
+            if (it == PostListViewModel.LoadingState.LOADED)
+                binding.circularProgressBar.visibility = View.GONE
+
         }
     }
 
     private fun getUsersPosts() {
-        ServerRequestsModel.getUsersPosts {
-            adapter?.setFilteredList(it)
+        postListViewModel?.postList?.observe(viewLifecycleOwner) {
+            val currentUser: FirebaseUser? = FirebaseModel.shared.getUser()
+
+            if (currentUser != null) {
+                val usersRestaurant = it.filter { post -> post.userId == currentUser.uid }
+                restaurants = usersRestaurant
+                adapter?.setFilteredList(usersRestaurant)
+            }
+
         }
     }
 
@@ -135,10 +158,10 @@ class RestaurantListFragment : Fragment() {
             }
 
             if (filteredList.isEmpty()) {
-                Toast.makeText(context, "No Data found", Toast.LENGTH_SHORT).show()
-            } else {
-                adapter?.setFilteredList(filteredList)
+                Toast.makeText(context, "לא נמצאו מסעדות", Toast.LENGTH_SHORT).show()
             }
+
+            adapter?.setFilteredList(filteredList)
         }
     }
 }

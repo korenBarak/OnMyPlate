@@ -17,7 +17,7 @@ import java.util.UUID
 
 object ServerRequestsModel {
     private val cloudinaryModel: CloudinaryModel = CloudinaryModel()
-    private val firebaseModel: FirebaseModel = FirebaseModel()
+    private val firebaseModel: FirebaseModel = FirebaseModel.shared
 
     fun addPost(post: Post, images: MutableList<Bitmap>, callback: (Boolean) -> Unit) {
         val postId = UUID.randomUUID().toString()
@@ -83,20 +83,8 @@ object ServerRequestsModel {
         return firebaseModel.addComment(commentId, comment)
     }
 
-    fun getAllPosts(callback: PostsCallback) {
-        firebaseModel.getAllPosts(callback)
-    }
-
-    fun getUsersPosts(callback: PostsCallback) {
-        firebaseModel.getUsersPosts(callback)
-    }
-
     fun getCommentsByPost(postId: String, callback: CommentsCallback) {
         firebaseModel.getCommentsByPost(postId, callback)
-    }
-
-    fun deletePost(postId: String) {
-        firebaseModel.deletePost(postId)
     }
 
     fun updateUserDetails(user: User, bitmap: Bitmap) {

@@ -30,7 +30,7 @@ class SignUpFragment : Fragment() {
     ): View? {
         binding = FragmentSignUpBinding.inflate(inflater, container, false)
 
-        val signedUser = FirebaseModel().getUser()
+        val signedUser = FirebaseModel.shared.getUser()
 
         viewModel = if (signedUser == null) {
             ViewModelProvider(this)[SignUpViewModel::class.java]
@@ -49,7 +49,7 @@ class SignUpFragment : Fragment() {
         }
 
         binding?.logOutButton?.setOnClickListener {
-            FirebaseModel().signOutUser()
+            FirebaseModel.shared.signOutUser()
             val intent = Intent(MyApplication.Globals.context, SignPageActivity::class.java)
             startActivity(intent)
         }

@@ -7,7 +7,7 @@ import com.example.onmyplate.model.FirebaseModel
 import com.google.firebase.auth.FirebaseUser
 
 class UserViewModel: ViewModel() {
-    private val firebaseModel = FirebaseModel()
+    private val firebaseModel = FirebaseModel.shared
 
     private val _signedUser = MutableLiveData<FirebaseUser?>()
     val signedUser: LiveData<FirebaseUser?> get() = _signedUser

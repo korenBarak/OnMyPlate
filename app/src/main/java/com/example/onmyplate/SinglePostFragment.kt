@@ -194,7 +194,7 @@ class SinglePostFragment : Fragment() {
     }
 
     private fun handleSaveRestaurant(googlePlace: GoogleApiPlace) {
-        val user = FirebaseModel().getUser()
+        val user = FirebaseModel.shared.getUser()
 
         if (user == null) {
             toastWrapper("חלה שגיאה, המשתמש לא נמצא")

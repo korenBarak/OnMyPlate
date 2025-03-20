@@ -24,7 +24,7 @@ class SignInFragment : Fragment() {
             if (email.isEmpty() || password.isEmpty())
                 Toast.makeText(activity, "יש למלא את כל הפרטים הנדרשים", Toast.LENGTH_SHORT).show()
             else
-                FirebaseModel().signInUser(email, password)
+                FirebaseModel.shared.signInUser(email, password)
         }
 
         return binding?.root

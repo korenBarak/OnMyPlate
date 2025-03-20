@@ -4,14 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.onmyplate.R
 import com.example.onmyplate.model.Comment
 import com.example.onmyplate.model.FirebaseModel
-import com.example.onmyplate.model.Post
-import com.example.onmyplate.model.User
 import com.squareup.picasso.Picasso
 
 class CommentsListAdapter(
@@ -24,7 +21,7 @@ class CommentsListAdapter(
         val description: TextView = view.findViewById(R.id.commentText)
 
         fun bind(comment: Comment) {
-            FirebaseModel().getUserById(comment.userId) { user ->
+            FirebaseModel.shared.getUserById(comment.userId) { user ->
                 if (user != null) {
                     Picasso.get()
                         .load(user.profilePictureUrl)
@@ -45,7 +42,7 @@ class CommentsListAdapter(
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
         if (comments?.get(position) != null) {
-            FirebaseModel().getUserById(comments!![position].userId) { user ->
+            FirebaseModel.shared.getUserById(comments!![position].userId) { user ->
                 if (user != null) {
                     Picasso.get()
                         .load(user.profilePictureUrl)

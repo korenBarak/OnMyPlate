@@ -2,6 +2,8 @@ package com.example.onmyplate.model
 
 import android.net.Uri
 import android.widget.Toast
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.onmyplate.base.CommentsCallback
 import com.example.onmyplate.base.Constants
 import com.example.onmyplate.base.MyApplication
@@ -18,9 +20,13 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 
-class FirebaseModel {
+class FirebaseModel private constructor() {
     private val auth: FirebaseAuth = Firebase.auth
     private val db = Firebase.firestore
+
+    companion object {
+        val shared = FirebaseModel()
+    }
 
     fun getUser(): FirebaseUser? {
         return auth.currentUser
@@ -108,7 +114,7 @@ class FirebaseModel {
     fun signInUser(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener() { task ->
             if (task.isSuccessful) {
-                 val user = auth.currentUser
+                val user = auth.currentUser
             } else {
                 Toast.makeText(
                     MyApplication.Globals.context,
@@ -136,22 +142,24 @@ class FirebaseModel {
         }
     }
 
-    fun getAllPosts(callback: PostsCallback): Task<QuerySnapshot> {
-        return db.collection(Constants.FirebaseCollections.POSTS).get()
+    fun getAllPosts(): LiveData<List<Post>> {
+        val postsLiveData = MutableLiveData<List<Post>>()
+
+        db.collection(Constants.FirebaseCollections.POSTS).get()
             .addOnSuccessListener { querySnapshot ->
+                val fetchedPosts = querySnapshot.documents.mapNotNull {
+                    val documentData = it.data
+                    documentData?.put("postId", it.id)
+                    Post.fromJSON(documentData!!)
+                }
 
-                val fetchedPosts =
-                    querySnapshot.documents.mapNotNull {
-                        val documentData = it.data
-                        documentData?.put("postId", it.id)
-                        Post.fromJSON(documentData!!)
-                    }
-
-                callback(fetchedPosts)
+                postsLiveData.value = fetchedPosts
             }
             .addOnFailureListener {
-                callback(listOf())
+                postsLiveData.value = listOf()
             }
+
+        return postsLiveData
     }
 
     fun getCommentsByPost(postId: String, callback: CommentsCallback): Task<QuerySnapshot> {
@@ -173,7 +181,7 @@ class FirebaseModel {
             .set(comment)
     }
 
-    fun deletePost(postId: String) : Task<Void> {
+    fun deletePost(postId: String): Task<Void> {
         return db.collection(Constants.FirebaseCollections.POSTS)
             .document(postId).delete()
     }
