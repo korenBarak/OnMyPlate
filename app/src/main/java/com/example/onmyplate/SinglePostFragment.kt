@@ -1,5 +1,6 @@
 package com.example.onmyplate
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -86,19 +87,13 @@ class SinglePostFragment : Fragment() {
         binding.restaurantTextField.setOnFocusChangeListener { view, b ->
             handleInputChange()
         }
-
         binding.descriptionTextField.setOnFocusChangeListener { view, b ->
             handleInputChange()
         }
-
         binding.tagsTextField.setOnFocusChangeListener { view, b ->
             handleInputChange()
         }
 
-
-        binding.ratingBar.setOnRatingBarChangeListener { ratingBar, fl, b ->
-            handleInputChange()
-        }
 
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(binding.recyclerView)
@@ -126,7 +121,7 @@ class SinglePostFragment : Fragment() {
             val tags = binding.tagsTextField.text.toString()
             val description = binding.descriptionTextField.text.toString()
 
-            if (restaurantName.isBlank() || tags.isBlank() || description.isBlank()) {
+            if (restaurantName.isBlank() || tags.isBlank() || description.isBlank() || photosArr.size == 0) {
                 toastWrapper("יש למלא את כל הפרטים")
             } else {
                 binding.circularProgressBar.visibility = View.VISIBLE
@@ -166,10 +161,10 @@ class SinglePostFragment : Fragment() {
             else -> {
                 var selectedPlace: GoogleApiPlace? = null
                 MaterialAlertDialogBuilder(
-                    MyApplication.Globals.context!!,
+                    requireContext(),
                     R.style.CustomMaterialAlertDialogStyle
                 )
-                    .setTitle("נמצאו כמה מסעדות התואמות לשם: $restaurantName, בחר מה המסעדה המתאימה")
+                    .setTitle("נמצאו כמה מסעדות התואמות לשם: $restaurantName")
                     .setNeutralButton("בטל") { dialog, _ -> dialog.dismiss() }
                     .setPositiveButton("בחר") { _, _ ->
                         if (selectedPlace != null) {
@@ -213,15 +208,26 @@ class SinglePostFragment : Fragment() {
                 googleRating = roundedRating
             )
 
+            val bitmapPhotos: List<Bitmap> = photosArr.filterIsInstance<ImageData.BitmapData>().map { photo -> photo.bitmap }
+
+            if(isNewPost) {
+                ServerRequestsModel.addPost(post, bitmapPhotos.toMutableList()) {
+                    binding.circularProgressBar.visibility = View.GONE
+                    requireActivity().supportFragmentManager.popBackStack()
+                }
+            }
+
 
             // TODO: handle photosArr to bitmap or something , photosArr
-            ServerRequestsModel.addPost(post, mutableListOf()) {
-                binding.circularProgressBar.visibility = View.GONE
-                // back one level
-//                val intent = Intent(this, NavigationActivity::class.java)
-//                intent.putExtra("DATA_TYPE", "all")
-//                startActivity(intent)
-            }
+//             val newArr: List<ImageData.BitmapData> =  photosArr.filter{photo -> photo is ImageData.BitmapData}
+
+//            ServerRequestsModel.addPost(post, mutableListOf()) {
+//                binding.circularProgressBar.visibility = View.GONE
+//                // back one level
+////                val intent = Intent(this, NavigationActivity::class.java)
+////                intent.putExtra("DATA_TYPE", "all")
+////                startActivity(intent)
+//            }
         }
     }
 
@@ -231,7 +237,6 @@ class SinglePostFragment : Fragment() {
 
             CoroutineScope(Dispatchers.IO).launch {
                 val partialPost = AppLocalDb.database.partialPostData().getLastPartialPost()
-
                 if (partialPost != null) {
                     withContext(Dispatchers.Main) {
                         binding.ratingBar.rating = partialPost.rating ?: 0.0F

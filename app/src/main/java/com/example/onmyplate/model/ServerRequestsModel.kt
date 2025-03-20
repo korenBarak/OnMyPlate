@@ -8,7 +8,6 @@ import com.example.onmyplate.apiRequests.GoogleApiClient
 import com.example.onmyplate.base.CommentsCallback
 import com.example.onmyplate.base.Constants
 import com.example.onmyplate.base.MyApplication
-import com.example.onmyplate.base.PostsCallback
 import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,42 +21,35 @@ object ServerRequestsModel {
     fun addPost(post: Post, images: MutableList<Bitmap>, callback: (Boolean) -> Unit) {
         val postId = UUID.randomUUID().toString()
 
-        if (images.size == 0) {
-            firebaseModel.addPost(postId, post.copy(photoUrls = emptyList()))
-                .addOnCompleteListener { task ->
-                    callback(task.isSuccessful)
-                }
-
-        } else {
-            CoroutineScope(Dispatchers.IO).launch {
-                images.let {
-                    cloudinaryModel.uploadPostImages(
-                        bitmaps = images,
-                        name = postId,
-                        onSuccess = { urls ->
-                            if (urls.isNotEmpty()) {
-                                val postWithPhoto = post.copy(photoUrls = urls)
-                                firebaseModel.addPost(postId, postWithPhoto)
-                                    .addOnCompleteListener { task ->
-                                        callback(task.isSuccessful)
-                                    }
-                            }
-                        },
-                        onError = {
-                            callback(false)
+        CoroutineScope(Dispatchers.IO).launch {
+            images.let {
+                cloudinaryModel.uploadPostImages(
+                    bitmaps = images,
+                    name = postId,
+                    onSuccess = { urls ->
+                        if (urls.isNotEmpty()) {
+                            val postWithPhoto = post.copy(photoUrls = urls)
+                            firebaseModel.addPost(postId, postWithPhoto)
+                                .addOnCompleteListener { task ->
+                                    callback(task.isSuccessful)
+                                }
                         }
-                    )
-                }
+                    },
+                    onError = {
+                        callback(false)
+                    }
+                )
             }
-
         }
+
+
     }
 
     fun addNewUser(user: User, profilePictureUrl: Bitmap?) {
         if (profilePictureUrl == null) {
-             firebaseModel.createNewUser(user)
+            firebaseModel.createNewUser(user)
         } else {
-             cloudinaryModel.uploadImage(
+            cloudinaryModel.uploadImage(
                 bitmap = profilePictureUrl,
                 name = "",
                 folderName = Constants.CloudinaryFolders.PROFILE,
@@ -78,7 +70,7 @@ object ServerRequestsModel {
         }
     }
 
-    fun addComment(comment: Comment) : Task<Void> {
+    fun addComment(comment: Comment): Task<Void> {
         val commentId = UUID.randomUUID().toString()
         return firebaseModel.addComment(commentId, comment)
     }

@@ -3,5 +3,6 @@
     <style name="CustomMaterialAlertDialogStyle" parent="ThemeOverlay.MaterialComponents.Dialog">
         <item name="colorControlActivated">#6750A4</item>
         <item name="colorPrimary">#6750A4</item>
+        <item name="colorSurface">@color/white</item>
     </style>
 </resources>
