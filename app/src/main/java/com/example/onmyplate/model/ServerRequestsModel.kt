@@ -14,11 +14,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-object ServerRequestsModel {
+object ServerRequestsModel  {
     private val cloudinaryModel: CloudinaryModel = CloudinaryModel()
     private val firebaseModel: FirebaseModel = FirebaseModel.shared
 
-    fun addPost(post: Post, images: MutableList<Bitmap>, callback: (Boolean) -> Unit) {
+    fun addPost(post: Post, images: MutableList<Bitmap>, callback: (Post?) -> Unit) {
         val postId = UUID.randomUUID().toString()
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -31,12 +31,12 @@ object ServerRequestsModel {
                             val postWithPhoto = post.copy(photoUrls = urls)
                             firebaseModel.addPost(postId, postWithPhoto)
                                 .addOnCompleteListener { task ->
-                                    callback(task.isSuccessful)
+                                    callback(postWithPhoto.copy(postId=postId))
                                 }
                         }
                     },
                     onError = {
-                        callback(false)
+                        callback(null)
                     }
                 )
             }

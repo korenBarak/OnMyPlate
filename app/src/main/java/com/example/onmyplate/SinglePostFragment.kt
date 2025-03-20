@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.example.onmyplate.adapter.ImageData
@@ -22,6 +23,7 @@ import com.example.onmyplate.model.Post
 import com.example.onmyplate.model.ServerRequestsModel
 import com.example.onmyplate.model.room.AppLocalDb
 import com.example.onmyplate.model.room.PartialPost
+import com.example.onmyplate.viewModel.PostListViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +37,7 @@ var MAX_PHOTOS = 5
 
 class SinglePostFragment : Fragment() {
     private lateinit var binding: FragmentSinglePostBinding
+    private var postListViewModel: PostListViewModel? = null
     private var cameraLauncher: ActivityResultLauncher<Void?>? = null
     private var adapter: ImageRecyclerAdapter? = null
     private var photosArr: MutableList<ImageData> = mutableListOf<ImageData>()
@@ -54,6 +57,7 @@ class SinglePostFragment : Fragment() {
         super.onCreate(savedInstanceState)
         // window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
         binding = FragmentSinglePostBinding.inflate(inflater, container, false)
+        postListViewModel = ViewModelProvider(requireActivity()).get(PostListViewModel::class.java)
         initFields()
 
 
@@ -212,6 +216,9 @@ class SinglePostFragment : Fragment() {
 
             if(isNewPost) {
                 ServerRequestsModel.addPost(post, bitmapPhotos.toMutableList()) {
+                    if(it != null)
+                        postListViewModel?.addPost(it)
+
                     binding.circularProgressBar.visibility = View.GONE
                     requireActivity().supportFragmentManager.popBackStack()
                 }

@@ -7,7 +7,6 @@ import com.example.onmyplate.model.FirebaseModel
 import com.example.onmyplate.model.Post
 
 
-
 class PostListViewModel : ViewModel() {
     enum class LoadingState {
         LOADING,
@@ -40,5 +39,11 @@ class PostListViewModel : ViewModel() {
 
         val updatedList = _postList.value?.filterNot { it.postId == postId } ?: listOf()
         _postList.value = updatedList
+    }
+
+    fun addPost(post: Post) {
+        val mutableList = _postList.value?.toMutableList() ?: mutableListOf()
+        mutableList.add(post)
+        _postList.value = mutableList
     }
 }
