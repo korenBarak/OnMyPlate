@@ -9,6 +9,8 @@ import com.example.onmyplate.base.CommentsCallback
 import com.example.onmyplate.base.Constants
 import com.example.onmyplate.base.MyApplication
 import com.example.onmyplate.base.PostsCallback
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,9 +56,9 @@ object ServerRequestsModel {
 
     fun addNewUser(user: User, profilePictureUrl: Bitmap?) {
         if (profilePictureUrl == null) {
-            firebaseModel.createNewUser(user)
+             firebaseModel.createNewUser(user)
         } else {
-            cloudinaryModel.uploadImage(
+             cloudinaryModel.uploadImage(
                 bitmap = profilePictureUrl,
                 name = "",
                 folderName = Constants.CloudinaryFolders.PROFILE,
@@ -77,21 +79,25 @@ object ServerRequestsModel {
         }
     }
 
-    fun addComment(comment: Comment) {
+    fun addComment(comment: Comment) : Task<Void> {
         val commentId = UUID.randomUUID().toString()
-        firebaseModel.addComment(commentId, comment)
+        return firebaseModel.addComment(commentId, comment)
     }
 
     fun getAllPosts(callback: PostsCallback) {
         firebaseModel.getAllPosts(callback)
     }
 
-    fun getUsersPosts(callback: PostsCallback){
+    fun getUsersPosts(callback: PostsCallback) {
         firebaseModel.getUsersPosts(callback)
     }
 
-    fun getCommentsByRestaurant(restaurantName: String, callback: CommentsCallback){
-        firebaseModel.getCommentsByRestaurant(restaurantName, callback)
+    fun getCommentsByPost(postId: String, callback: CommentsCallback) {
+        firebaseModel.getCommentsByPost(postId, callback)
+    }
+
+    fun deletePost(postId: String) {
+        firebaseModel.deletePost(postId)
     }
 
     fun updateUserDetails(user: User, bitmap: Bitmap) {

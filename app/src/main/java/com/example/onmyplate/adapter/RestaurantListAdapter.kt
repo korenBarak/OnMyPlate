@@ -9,36 +9,23 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.onmyplate.R
 import com.example.onmyplate.model.Post
+import com.google.android.material.button.MaterialButton
 import com.squareup.picasso.Picasso
 
 class RestaurantListAdapter(
     private var restaurants: List<Post>?,
+    private val isAbleToModify: Boolean,
+    private val onEdit: (Post?) -> Unit,
+    private val onDelete: (String?) -> Unit,
     private val onRowClicked: (Post?) -> Unit
 ) : RecyclerView.Adapter<RestaurantListAdapter.RestaurantViewHolder>() {
 
     inner class RestaurantViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.restaurantPicture)
         val name: TextView = view.findViewById(R.id.restaurantName)
-        val id: TextView = view.findViewById(R.id.restaurantTextField)
         val ratingBar: RatingBar = view.findViewById(R.id.starRatingBar)
-
-        fun bind(restaurant: Post?) {
-            Picasso.get()
-                .load(restaurant?.photoUrls?.get(0))
-                .into(imageView)
-
-            name.text = restaurant?.restaurantName
-            id.text = restaurant?.description
-            ratingBar.rating = (restaurant?.rating ?: 1) as Float
-
-            ratingBar.setOnRatingBarChangeListener { ratingBar, _, _ ->
-                restaurant?.rating = ratingBar.rating
-            }
-
-            itemView.setOnClickListener {
-                onRowClicked(restaurant)
-            }
-        }
+        val deleteButton: MaterialButton = view.findViewById(R.id.deleteButton)
+        val editButton: MaterialButton = view.findViewById(R.id.editButton)
     }
 
     fun setRestaurants(restaurants: List<Post>?) {
@@ -58,9 +45,17 @@ class RestaurantListAdapter(
                 .into(holder?.imageView)
 
         holder.name.text = restaurants?.get(position)?.restaurantName
-        holder.id.text = restaurants?.get(position)?.description
+        holder.ratingBar.rating = restaurants?.get(position)?.rating ?: 0.0f
         holder.itemView.setOnClickListener {
             onRowClicked(restaurants?.get(position))
+        }
+
+        if (!isAbleToModify) {
+            holder.deleteButton.visibility = View.GONE
+            holder.editButton.visibility = View.GONE
+        } else {
+            holder.editButton.setOnClickListener { onEdit(restaurants?.get(position)) }
+            holder.deleteButton.setOnClickListener { onDelete(restaurants?.get(position)?.postId) }
         }
     }
 

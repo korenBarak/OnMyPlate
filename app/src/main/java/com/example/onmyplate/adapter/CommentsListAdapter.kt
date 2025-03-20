@@ -15,15 +15,13 @@ import com.example.onmyplate.model.User
 import com.squareup.picasso.Picasso
 
 class CommentsListAdapter(
-    private var comments: List<Comment>?,
-    private val onRowClicked: (Comment?) -> Unit
+    private var comments: MutableList<Comment>?
 ) : RecyclerView.Adapter<CommentsListAdapter.CommentViewHolder>() {
 
     inner class CommentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.userProfileImage)
         var userName: TextView = view.findViewById(R.id.userName)
         val description: TextView = view.findViewById(R.id.commentText)
-        val ratingBar: RatingBar = view.findViewById(R.id.commentRatingBar)
 
         fun bind(comment: Comment) {
             FirebaseModel().getUserById(comment.userId) { user ->
@@ -34,8 +32,8 @@ class CommentsListAdapter(
                     userName.text = user.name
                 }
             }
+
             description.text = comment.description
-            ratingBar.rating = (comment.rating ?: 1) as Float
         }
     }
 
@@ -54,7 +52,6 @@ class CommentsListAdapter(
                         .into(holder.imageView)
                     holder.userName.text = user.name
                     holder.description.text = comments!![position].description
-                    holder.ratingBar.rating = comments!![position].rating
                 }
             }
         }
@@ -63,7 +60,7 @@ class CommentsListAdapter(
 
     override fun getItemCount(): Int = comments?.size ?: 0
 
-    fun setComments(comments: List<Comment>) {
+    fun setComments(comments: MutableList<Comment>) {
         this.comments = comments
     }
 }
