@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 
@@ -31,10 +31,11 @@ class FirebaseModel {
             .addOnSuccessListener { document ->
                 if (document.exists()) {
                     var user = User()
-                    val profilePictureUrl = document.getString("profilePictureUrl")?.let { Uri.parse(it) }
+                    val profilePictureUrl =
+                        document.getString("profilePictureUrl")?.let { Uri.parse(it) }
                     val name = document.getString("name")
                     val email = document.getString("email")
-                    if (name != null && email != null){
+                    if (name != null && email != null) {
                         user = User("", email, name, profilePictureUrl)
                     }
                     callback(user)
@@ -42,11 +43,11 @@ class FirebaseModel {
                     callback(null)
                 }
             }
-                .addOnFailureListener { e ->
-                    e.printStackTrace()
-                    callback(null) // Handle failure
-                }
-        }
+            .addOnFailureListener { e ->
+                e.printStackTrace()
+                callback(null) // Handle failure
+            }
+    }
 
 
     fun signOutUser() {
@@ -73,8 +74,9 @@ class FirebaseModel {
             .set(post)
     }
 
-    fun createNewUser(user: User) {
-        auth.createUserWithEmailAndPassword(user.email, user.password)
+    fun createNewUser(user: User):
+            Task<AuthResult> {
+        return auth.createUserWithEmailAndPassword(user.email, user.password)
             .addOnCompleteListener() { task ->
                 if (task.isSuccessful) {
                     if (user.name != null || user.profilePictureUrl != null) {
@@ -133,10 +135,14 @@ class FirebaseModel {
     fun getAllPosts(callback: PostsCallback): Task<QuerySnapshot> {
         return db.collection(Constants.FirebaseCollections.POSTS).get()
             .addOnSuccessListener { querySnapshot ->
+
                 val fetchedPosts =
                     querySnapshot.documents.mapNotNull {
-                        it.toObject(Post::class.java)
+                        val documentData = it.data
+                        documentData?.put("postId", it.id)
+                        Post.fromJSON(documentData!!)
                     }
+
                 callback(fetchedPosts)
             }
             .addOnFailureListener {
@@ -144,10 +150,12 @@ class FirebaseModel {
             }
     }
 
-    fun getCommentsByRestaurant(restaurantName: String, callback: CommentsCallback): Task<QuerySnapshot> {
-        return db.collection(Constants.FirebaseCollections.COMMENTS) .whereEqualTo("restaurantName", restaurantName).get()
+    fun getCommentsByPost(postId: String, callback: CommentsCallback): Task<QuerySnapshot> {
+        return db.collection(Constants.FirebaseCollections.COMMENTS).whereEqualTo("postId", postId)
+            .get()
             .addOnSuccessListener { querySnapshot ->
-                val fetchedComments = querySnapshot.documents.mapNotNull { it.toObject(Comment::class.java) }
+                val fetchedComments =
+                    querySnapshot.documents.mapNotNull { it.toObject(Comment::class.java) }
                 callback(fetchedComments)
             }
             .addOnFailureListener {
@@ -155,18 +163,26 @@ class FirebaseModel {
             }
     }
 
-    fun addComment(commentId: String, comment: Comment): Task<Void>  {
+    fun addComment(commentId: String, comment: Comment): Task<Void> {
         return db.collection(Constants.FirebaseCollections.COMMENTS)
             .document(commentId)
             .set(comment)
     }
 
-    fun getUsersPosts(callback: PostsCallback): Task<QuerySnapshot>{
+    fun deletePost(postId: String) : Task<Void> {
         return db.collection(Constants.FirebaseCollections.POSTS)
-            .whereEqualTo("userId", auth.currentUser?.uid).get().addOnSuccessListener { querySnapshot ->
+            .document(postId).delete()
+    }
+
+    fun getUsersPosts(callback: PostsCallback): Task<QuerySnapshot> {
+        return db.collection(Constants.FirebaseCollections.POSTS)
+            .whereEqualTo("userId", auth.currentUser?.uid).get()
+            .addOnSuccessListener { querySnapshot ->
                 val fetchedPosts =
                     querySnapshot.documents.mapNotNull {
-                        it.toObject(Post::class.java)
+                        val documentData = it.data
+                        documentData?.put("postId", it.id)
+                        Post.fromJSON(documentData!!)
                     }
                 callback(fetchedPosts)
             }
