@@ -26,6 +26,10 @@ class FirebaseModel {
         return auth.currentUser
     }
 
+    fun getAuthListener(listener: FirebaseAuth.AuthStateListener) {
+        auth.addAuthStateListener(listener)
+    }
+
     fun getUserById(userId: String, callback: UserCallback): Task<DocumentSnapshot> {
         return db.collection(Constants.FirebaseCollections.USERS).document(userId).get()
             .addOnSuccessListener { document ->
@@ -104,7 +108,7 @@ class FirebaseModel {
     fun signInUser(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener() { task ->
             if (task.isSuccessful) {
-//                 val user = auth.currentUser
+                 val user = auth.currentUser
             } else {
                 Toast.makeText(
                     MyApplication.Globals.context,

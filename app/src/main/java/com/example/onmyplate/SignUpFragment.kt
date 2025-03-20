@@ -58,8 +58,6 @@ class SignUpFragment : Fragment() {
             val nameText = binding?.nameTextField?.text.toString()
             val emailText = binding?.emailTextField?.text.toString()
             val passwordText = binding?.passwordTextField?.text.toString()
-            val intent = Intent(requireContext(), NavigationActivity::class.java)
-            intent.putExtra("DATA_TYPE", "all")
 
             if (nameText.isBlank() || emailText.isBlank()) {
                 Toast.makeText(activity, "יש למלא את כל הפרטים", Toast.LENGTH_SHORT).show()
@@ -84,7 +82,6 @@ class SignUpFragment : Fragment() {
                     )
 
                     viewModel.handleButtonClick(user, bitmap)
-                    startActivity(intent)
                 }
             }
         }
