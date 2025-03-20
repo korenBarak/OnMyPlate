@@ -59,7 +59,14 @@ class RestaurantListFragment : Fragment() {
             getAllPosts()
         } else {
             getUsersPosts()
+            binding.swipeRefreshLayout.isEnabled = false
         }
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            if (arguments?.getString("DATA_TYPE") == "all")
+                postListViewModel?.getAllPosts()
+        }
+
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -129,8 +136,10 @@ class RestaurantListFragment : Fragment() {
         }
 
         postListViewModel?.loadingState?.observe(viewLifecycleOwner) {
-            if (it == PostListViewModel.LoadingState.LOADED)
+            if (it == PostListViewModel.LoadingState.LOADED) {
                 binding.circularProgressBar.visibility = View.GONE
+                binding.swipeRefreshLayout.isRefreshing = false
+            }
 
         }
     }
