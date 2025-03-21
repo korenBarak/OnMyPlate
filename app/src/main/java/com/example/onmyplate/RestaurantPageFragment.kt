@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +21,7 @@ import com.example.onmyplate.model.Comment
 import com.example.onmyplate.model.ServerRequestsModel
 import com.example.onmyplate.model.ServerRequestsModel.addComment
 import com.google.firebase.auth.FirebaseAuth
+import com.squareup.picasso.Picasso
 
 class RestaurantPageFragment : Fragment() {
     private lateinit var binding: FragmentRestaurantPageBinding
@@ -46,6 +48,10 @@ class RestaurantPageFragment : Fragment() {
         binding.internalRatingTitle.text = "דירוג  - ${rating}"
         binding.googleRatingBar.rating = googleRating
         binding.googleRatingTitle.text = "דירוג גוגל  - ${googleRating}"
+        binding.userName.text = "שם - ${args.userName}"
+        Picasso.get()
+            .load(args.userProfilePicture.toUri())
+            .into(binding.postUserProfile)
 
         binding.restaurantDescription.text = args.description
         binding.restaurantTags.text = args.tags

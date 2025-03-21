@@ -56,7 +56,7 @@
             android:progressTint="@color/gold"
             android:scaleX="0.5"
             android:scaleY="0.5"
-            android:stepSize="1.0"
+            android:stepSize="0.5"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/restaurantPictureCard"

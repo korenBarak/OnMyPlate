@@ -1,6 +1,7 @@
 package com.example.onmyplate
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,12 +46,22 @@ class RestaurantListFragment : Fragment() {
             isAbleToModify,
             { goToEditPost(it) },
             { deletePost(it) }) { restaurant ->
-            restaurant?.photoUrls
+            //
 
-            val action = createNavigationAction(restaurant)
+            if (restaurant != null) {
+                FirebaseModel.shared.getUserById(restaurant.userId) {
+                    binding.circularProgressBar.visibility = View.VISIBLE
 
-            if (action != null)
-                findNavController().navigate(action)
+                    val action = createNavigationAction(
+                        restaurant,
+                        it?.name ?: "",
+                        (it?.profilePictureUrl ?: "").toString()
+                    )
+
+                    binding.circularProgressBar.visibility = View.GONE
+                    findNavController().navigate(action)
+                }
+            }
         }
         recyclerView.adapter = adapter
 
@@ -98,15 +109,16 @@ class RestaurantListFragment : Fragment() {
     }
 
     private fun goToEditPost(post: Post?) {
-        val action = RestaurantListFragmentDirections.actionRestaurantListFragmentToSinglePostFragment(
-            post?.postId ?: "",
-            post?.restaurantName,
-            post?.description,
-            post?.tags,
-            post?.rating ?: 0.0F,
-            post?.googleRating?.toFloat() ?: 0.0F,
-            post?.photoUrls?.filterNotNull()?.toTypedArray() ?: emptyArray()
-        )
+        val action =
+            RestaurantListFragmentDirections.actionRestaurantListFragmentToSinglePostFragment(
+                post?.postId ?: "",
+                post?.restaurantName,
+                post?.description,
+                post?.tags,
+                post?.rating ?: 0.0F,
+                post?.googleRating?.toFloat() ?: 0.0F,
+                post?.photoUrls?.filterNotNull()?.toTypedArray() ?: emptyArray()
+            )
 
         findNavController().navigate(action)
     }
@@ -118,20 +130,24 @@ class RestaurantListFragment : Fragment() {
         }
     }
 
-    private fun createNavigationAction(post: Post?): RestaurantListFragmentDirections.ActionRestaurantListFragmentToRestaurantPageFragment? {
-        if (post != null) {
-            return RestaurantListFragmentDirections.actionRestaurantListFragmentToRestaurantPageFragment(
-                post.postId ?: "",
-                post.restaurantName,
-                post.description,
-                post.tags,
-                post.rating,
-                post.googleRating?.toFloat() ?: 0.0F,
-                post.photoUrls?.filterNotNull()?.toTypedArray() ?: emptyArray()
-            )
-        }
+    private fun createNavigationAction(
+        post: Post,
+        userName: String,
+        userProfile: String
+    ): RestaurantListFragmentDirections.ActionRestaurantListFragmentToRestaurantPageFragment {
+        return RestaurantListFragmentDirections.actionRestaurantListFragmentToRestaurantPageFragment(
+            post.postId ?: "",
+            userName,
+            userProfile,
+            post.restaurantName,
+            post.description,
+            post.tags,
+            post.rating,
+            post.googleRating?.toFloat() ?: 0.0F,
+            post.photoUrls?.filterNotNull()?.toTypedArray() ?: emptyArray()
+        )
 
-        return null
+
     }
 
     private fun getAllPosts() {

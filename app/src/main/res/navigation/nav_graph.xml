@@ -45,6 +45,12 @@
                 android:name="postId"
                 app:argType="string" />
             <argument
+                android:name="userName"
+                app:argType="string" />
+            <argument
+                android:name="userProfilePicture"
+                app:argType="string" />
+            <argument
                 android:name="restaurantName"
                 app:argType="string" />
             <argument
@@ -84,7 +90,7 @@
                 app:nullable="true" />
             <argument
                 android:name="rating"
-                app:argType="float"/>
+                app:argType="float" />
             <argument
                 android:name="googleRating"
                 app:argType="float" />
@@ -130,6 +136,12 @@
         android:label="RestaurantPageFragment">
         <argument
             android:name="postId"
+            app:argType="string" />
+        <argument
+            android:name="userName"
+            app:argType="string" />
+        <argument
+            android:name="userProfilePicture"
             app:argType="string" />
         <argument
             android:name="restaurantName"
@@ -178,7 +190,7 @@
             app:argType="float" />
         <argument
             android:name="googleRating"
-            app:argType="float"/>
+            app:argType="float" />
         <argument
             android:name="photos"
             app:argType="string[]"
