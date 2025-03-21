@@ -24,7 +24,7 @@ class RestaurantListFragment : Fragment() {
     private var restaurants: List<Post>? = listOf()
     private var adapter: RestaurantListAdapter? = null
     private var postListViewModel: PostListViewModel? = null
-    private val args : RestaurantListFragmentArgs by navArgs()
+    private val args: RestaurantListFragmentArgs by navArgs()
     private lateinit var binding: FragmentRestaurantListBinding
 
     override fun onCreateView(
@@ -81,7 +81,15 @@ class RestaurantListFragment : Fragment() {
 
         binding.addPostButton.setOnClickListener {
             val action =
-                RestaurantListFragmentDirections.actionRestaurantListFragmentToSinglePostFragment()
+                RestaurantListFragmentDirections.actionRestaurantListFragmentToSinglePostFragment(
+                    null,
+                    null,
+                    null,
+                    null,
+                    0.0F,
+                    0.0F,
+                    null
+                )
 
             findNavController().navigate(action)
         }
@@ -90,9 +98,17 @@ class RestaurantListFragment : Fragment() {
     }
 
     private fun goToEditPost(post: Post?) {
-        val action = createNavigationAction(post)
-        if (action != null)
-            findNavController().navigate(action)
+        val action = RestaurantListFragmentDirections.actionRestaurantListFragmentToSinglePostFragment(
+            post?.postId ?: "",
+            post?.restaurantName,
+            post?.description,
+            post?.tags,
+            post?.rating ?: 0.0F,
+            post?.googleRating?.toFloat() ?: 0.0F,
+            post?.photoUrls?.filterNotNull()?.toTypedArray() ?: emptyArray()
+        )
+
+        findNavController().navigate(action)
     }
 
     private fun deletePost(postId: String?) {

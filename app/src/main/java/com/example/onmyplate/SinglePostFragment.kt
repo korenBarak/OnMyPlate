@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.example.onmyplate.adapter.ImageData
@@ -43,11 +44,13 @@ class SinglePostFragment : Fragment() {
     private var photosArr: MutableList<ImageData> = mutableListOf<ImageData>()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private var generatedId = UUID.randomUUID().toString()
+    private val args: SinglePostFragmentArgs by navArgs()
+
     private var isNewPost: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        isNewPost = arguments?.getString("postId").isNullOrBlank() != false
+        isNewPost = args.postId.isNullOrBlank() != false
     }
 
     override fun onCreateView(
@@ -286,13 +289,13 @@ class SinglePostFragment : Fragment() {
 
             binding.circularProgressBar.visibility = View.GONE
         } else {
-            binding.ratingBar.rating = arguments?.getFloat("rating") ?: 0.0F
-            binding.restaurantTextField.setText(arguments?.getString("restaurantName") ?: "")
-            binding.descriptionTextField.setText(arguments?.getString("description") ?: "")
-            binding.tagsTextField.setText(arguments?.getString("tags") ?: "")
+            binding.ratingBar.rating = args.rating
+            binding.restaurantTextField.setText(args.restaurantName)
+            binding.descriptionTextField.setText(args.description)
+            binding.tagsTextField.setText(args.tags)
 
             photosArr =
-                arguments?.getStringArray("photos")?.map { photo -> ImageData.StringData(photo) }
+                args.photos?.map { photo -> ImageData.StringData(photo) }
                     ?.toMutableList() ?: mutableListOf()
 
         }

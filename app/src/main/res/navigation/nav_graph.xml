@@ -66,9 +66,33 @@
         <action
             android:id="@+id/action_restaurantListFragment_to_singlePostFragment"
             app:destination="@id/singlePostFragment">
-
+            <argument
+                android:name="postId"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="restaurantName"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="description"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="tags"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="rating"
+                app:argType="float"/>
+            <argument
+                android:name="googleRating"
+                app:argType="float" />
+            <argument
+                android:name="photos"
+                app:argType="string[]"
+                app:nullable="true" />
         </action>
-
     </fragment>
     <fragment
         android:id="@+id/restaurantListItemFragment"
@@ -132,12 +156,38 @@
         android:id="@+id/singlePostFragment"
         android:name="com.example.onmyplate.SinglePostFragment"
         android:label="fragment_single_post"
-        tools:layout="@layout/fragment_single_post"/>
+        tools:layout="@layout/fragment_single_post">
+        <argument
+            android:name="postId"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="restaurantName"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="description"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="tags"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="rating"
+            app:argType="float" />
+        <argument
+            android:name="googleRating"
+            app:argType="float"/>
+        <argument
+            android:name="photos"
+            app:argType="string[]"
+            app:nullable="true" />
+    </fragment>
 
     <activity
         android:id="@+id/navigationActivity"
         android:name="com.example.onmyplate.NavigationActivity"
         android:label="NavigationActivity"
-        tools:layout="@layout/activity_navigation"
-        />
+        tools:layout="@layout/activity_navigation" />
 </navigation>
