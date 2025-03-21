@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.onmyplate.adapter.RestaurantListAdapter
@@ -22,6 +24,7 @@ class RestaurantListFragment : Fragment() {
     private var restaurants: List<Post>? = listOf()
     private var adapter: RestaurantListAdapter? = null
     private var postListViewModel: PostListViewModel? = null
+    private val args : RestaurantListFragmentArgs by navArgs()
     private lateinit var binding: FragmentRestaurantListBinding
 
     override fun onCreateView(
@@ -30,32 +33,28 @@ class RestaurantListFragment : Fragment() {
     ): View {
         binding = FragmentRestaurantListBinding.inflate(inflater, container, false)
         postListViewModel = ViewModelProvider(requireActivity()).get(PostListViewModel::class.java)
-
         val recyclerView: RecyclerView = binding.recyclerView
         val searchView: SearchView = binding.searchView
 
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        val isAbleToModify = arguments?.getString("DATA_TYPE") != "all"
+        val isAbleToModify = args.datatype != "all"
 
         adapter = RestaurantListAdapter(
             restaurants,
             isAbleToModify,
             { goToEditPost(it) },
             { deletePost(it) }) { restaurant ->
-            val bundle = postAsBundleArguments(restaurant)
+            restaurant?.photoUrls
 
-            val restaurantPageFragment = RestaurantPageFragment()
-            restaurantPageFragment.arguments = bundle
+            val action = createNavigationAction(restaurant)
 
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.frame_layout, restaurantPageFragment)
-            transaction.addToBackStack(null)
-            transaction.commit()
+            if (action != null)
+                findNavController().navigate(action)
         }
         recyclerView.adapter = adapter
 
-        if (arguments?.getString("DATA_TYPE") == "all") {
+        if (args.datatype == "all") {
             getAllPosts()
         } else {
             getUsersPosts()
@@ -63,7 +62,7 @@ class RestaurantListFragment : Fragment() {
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            if (arguments?.getString("DATA_TYPE") == "all")
+            if (args.datatype == "all")
                 postListViewModel?.getAllPosts()
         }
 
@@ -81,24 +80,19 @@ class RestaurantListFragment : Fragment() {
         })
 
         binding.addPostButton.setOnClickListener {
-            val addPostFragment = SinglePostFragment()
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.frame_layout, addPostFragment)
-            transaction.addToBackStack(null)
-            transaction.commit()
+            val action =
+                RestaurantListFragmentDirections.actionRestaurantListFragmentToSinglePostFragment()
+
+            findNavController().navigate(action)
         }
 
         return binding.root
     }
 
     private fun goToEditPost(post: Post?) {
-        val addPostFragment = SinglePostFragment()
-        addPostFragment.arguments = postAsBundleArguments(post)
-
-        val transaction = parentFragmentManager.beginTransaction()
-        transaction.replace(R.id.frame_layout, addPostFragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
+        val action = createNavigationAction(post)
+        if (action != null)
+            findNavController().navigate(action)
     }
 
     private fun deletePost(postId: String?) {
@@ -108,23 +102,20 @@ class RestaurantListFragment : Fragment() {
         }
     }
 
-    private fun postAsBundleArguments(post: Post?): Bundle {
+    private fun createNavigationAction(post: Post?): RestaurantListFragmentDirections.ActionRestaurantListFragmentToRestaurantPageFragment? {
         if (post != null) {
-            return Bundle().apply {
-                putString("restaurantName", post.restaurantName)
-                putString("tags", post.tags)
-                putString("postId", post.postId)
-                putFloat("rating", post.rating)
-                putDouble("googleRating", post.googleRating ?: 0.0)
-                putString("description", post.description)
-                putStringArray(
-                    "photos",
-                    post.photoUrls?.filterNotNull()?.toTypedArray() ?: arrayOf()
-                )
-            }
+            return RestaurantListFragmentDirections.actionRestaurantListFragmentToRestaurantPageFragment(
+                post.postId ?: "",
+                post.restaurantName,
+                post.description,
+                post.tags,
+                post.rating,
+                post.googleRating?.toFloat() ?: 0.0F,
+                post.photoUrls?.filterNotNull()?.toTypedArray() ?: emptyArray()
+            )
         }
 
-        return Bundle()
+        return null
     }
 
     private fun getAllPosts() {

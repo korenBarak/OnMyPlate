@@ -11,9 +11,9 @@ import com.example.onmyplate.model.Comment
 import com.example.onmyplate.model.FirebaseModel
 import com.squareup.picasso.Picasso
 
-class CommentsListAdapter(
-    private var comments: MutableList<Comment>?
-) : RecyclerView.Adapter<CommentsListAdapter.CommentViewHolder>() {
+class CommentsListAdapter() : RecyclerView.Adapter<CommentsListAdapter.CommentViewHolder>() {
+    private var comments: MutableList<Comment> =
+        mutableListOf()
 
     inner class CommentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.userProfileImage)
@@ -41,23 +41,28 @@ class CommentsListAdapter(
     }
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
-        if (comments?.get(position) != null) {
-            FirebaseModel.shared.getUserById(comments!![position].userId) { user ->
+        if (comments.get(position) != null) {
+            FirebaseModel.shared.getUserById(comments[position].userId) { user ->
                 if (user != null) {
                     Picasso.get()
                         .load(user.profilePictureUrl)
                         .into(holder.imageView)
                     holder.userName.text = user.name
-                    holder.description.text = comments!![position].description
+                    holder.description.text = comments[position].description
                 }
             }
         }
-        holder.bind(comments!![position])
+        holder.bind(comments[position])
     }
 
-    override fun getItemCount(): Int = comments?.size ?: 0
+    override fun getItemCount(): Int = comments.size
 
     fun setComments(comments: MutableList<Comment>) {
         this.comments = comments
+    }
+
+    fun addComment(newComment: Comment) {
+        this.comments.add(newComment)
+        notifyDataSetChanged()
     }
 }

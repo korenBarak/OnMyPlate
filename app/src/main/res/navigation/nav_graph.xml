@@ -19,7 +19,7 @@
         android:id="@+id/signUpFragment"
         android:name="com.example.onmyplate.SignUpFragment"
         android:label="fragment_sign_up"
-        tools:layout="@layout/fragment_sign_up" >
+        tools:layout="@layout/fragment_sign_up">
         <action
             android:id="@+id/action_signUpFragment_to_signInFragment"
             app:destination="@id/signInFragment" />
@@ -30,20 +30,114 @@
         android:label="activity_sign_page"
         tools:layout="@layout/activity_sign_page" />
     <fragment
-        android:id="@+id/restaurantListFragment2"
+        android:id="@+id/restaurantListFragment"
         android:name="com.example.onmyplate.RestaurantListFragment"
         android:label="fragment_restaurant_list"
-        tools:layout="@layout/fragment_restaurant_list" />
+        tools:layout="@layout/fragment_restaurant_list">
+        <argument
+            android:name="DATA_TYPE"
+            android:defaultValue="all"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_restaurantListFragment_to_restaurantPageFragment"
+            app:destination="@id/restaurantPageFragment">
+            <argument
+                android:name="postId"
+                app:argType="string" />
+            <argument
+                android:name="restaurantName"
+                app:argType="string" />
+            <argument
+                android:name="description"
+                app:argType="string" />
+            <argument
+                android:name="tags"
+                app:argType="string" />
+            <argument
+                android:name="rating"
+                app:argType="float" />
+            <argument
+                android:name="googleRating"
+                app:argType="float" />
+            <argument
+                android:name="photos"
+                app:argType="string[]" />
+        </action>
+        <action
+            android:id="@+id/action_restaurantListFragment_to_singlePostFragment"
+            app:destination="@id/singlePostFragment">
+
+        </action>
+
+    </fragment>
     <fragment
         android:id="@+id/restaurantListItemFragment"
         android:name="com.example.onmyplate.RestaurantListItemFragment"
-        android:label="RestaurantListItemFragment" />
+        android:label="RestaurantListItemFragment">
+        <action
+            android:id="@+id/action_restaurantListItemFragment_to_restaurantPageFragment"
+            app:destination="@id/restaurantPageFragment">
+            <argument
+                android:name="postId"
+                app:argType="string" />
+            <argument
+                android:name="restaurantName"
+                app:argType="string" />
+            <argument
+                android:name="description"
+                app:argType="string" />
+            <argument
+                android:name="tags"
+                app:argType="string" />
+            <argument
+                android:name="rating"
+                app:argType="float" />
+            <argument
+                android:name="googleRating"
+                app:argType="float" />
+            <argument
+                android:name="photos"
+                app:argType="string[]" />
+        </action>
+    </fragment>
     <fragment
-        android:id="@+id/restaurantPageFragment2"
+        android:id="@+id/restaurantPageFragment"
         android:name="com.example.onmyplate.RestaurantPageFragment"
-        android:label="RestaurantPageFragment" />
+        android:label="RestaurantPageFragment">
+        <argument
+            android:name="postId"
+            app:argType="string" />
+        <argument
+            android:name="restaurantName"
+            app:argType="string" />
+        <argument
+            android:name="description"
+            app:argType="string" />
+        <argument
+            android:name="tags"
+            app:argType="string" />
+        <argument
+            android:name="rating"
+            app:argType="float" />
+        <argument
+            android:name="googleRating"
+            app:argType="float" />
+        <argument
+            android:name="photos"
+            app:argType="string[]" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/singlePostFragment"
+        android:name="com.example.onmyplate.SinglePostFragment"
+        android:label="fragment_single_post"
+        tools:layout="@layout/fragment_single_post"/>
+
     <activity
         android:id="@+id/navigationActivity"
         android:name="com.example.onmyplate.NavigationActivity"
-        android:label="NavigationActivity" />
+        android:label="NavigationActivity"
+        tools:layout="@layout/activity_navigation"
+        />
 </navigation>

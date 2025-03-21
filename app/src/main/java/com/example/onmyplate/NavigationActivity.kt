@@ -2,24 +2,44 @@ package com.example.onmyplate
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.replace
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.example.onmyplate.databinding.ActivityNavigationBinding
 
 class NavigationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNavigationBinding
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNavigationBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        replaceFragment(RestaurantListFragment(), intent.getStringExtra("DATA_TYPE"))
+
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav2_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+
+        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+        navGraph.setStartDestination(R.id.restaurantListFragment)
+
+        val startArgs = Bundle().apply {
+            putString("DATA_TYPE", intent.getStringExtra("DATA_TYPE") ?: "all")
+        }
+
+        navController.setGraph(navGraph, startArgs)
 
         binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.homeFragment -> replaceFragment(RestaurantListFragment(), "all")
-                R.id.searchFragment -> replaceFragment(RestaurantListFragment(), "user")
-                R.id.profileFragment -> replaceFragment(SignUpFragment(), "")
+                R.id.homeFragment -> {
+                    val args = Bundle().apply { putString("DATA_TYPE", "all") }
+                    navController.navigate(R.id.restaurantListFragment, args)
+                }
+                R.id.searchFragment -> {
+                    val args = Bundle().apply { putString("DATA_TYPE", "user") }
+                    navController.navigate(R.id.restaurantListFragment, args)
+                }
+                R.id.profileFragment -> {
+                    navController.navigate(R.id.signUpFragment)
+                }
 
                 else ->{
 
@@ -27,19 +47,5 @@ class NavigationActivity : AppCompatActivity() {
             }
             true
         }
-
-    }
-
-    private fun replaceFragment(fragment: Fragment, prop: String?) {
-        val bundle = Bundle().apply {
-            putString("DATA_TYPE", prop)
-        }
-
-        fragment.arguments = bundle
-
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.frame_layout, fragment)
-        transaction.addToBackStack(null) // <-- Optional: allows back navigation
-        transaction.commit()
     }
 }

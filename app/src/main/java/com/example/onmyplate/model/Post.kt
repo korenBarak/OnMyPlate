@@ -36,6 +36,7 @@ data class Post(
 
         fun toMap(post: Post): Map<String, Any> {
             return mapOf(
+                "userId" to post.userId,
                 "restaurantName" to post.restaurantName,
                 "tags" to post.tags,
                 "description" to post.description,
