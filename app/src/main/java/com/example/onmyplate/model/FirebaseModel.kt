@@ -134,7 +134,7 @@ class FirebaseModel private constructor() {
     fun changeUserDetails(user: User) {
         val currentUser = auth.currentUser
 
-        if (currentUser != null && currentUser.displayName != user.name && !user.name.isNullOrBlank()) {
+        if (currentUser != null && !user.name.isNullOrBlank()) {
             val detailsToUpdate = userProfileChangeRequest {
                 displayName = user.name
                 photoUri = user.profilePictureUrl
