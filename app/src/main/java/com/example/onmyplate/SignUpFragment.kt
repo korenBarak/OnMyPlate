@@ -21,7 +21,8 @@ import com.example.onmyplate.viewModel.SignUpViewModel
 
 class SignUpFragment : Fragment() {
     private var binding: FragmentSignUpBinding? = null
-    private var galleryLauncher: ActivityResultLauncher<String>? = null
+    private var cameraLauncher: ActivityResultLauncher<Void?>? = null
+
     private lateinit var viewModel: ProfileViewModel
 
     override fun onCreateView(
@@ -40,13 +41,14 @@ class SignUpFragment : Fragment() {
 
         viewModel.initPage(signedUser, binding)
 
-        galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            binding?.profileImage?.setImageURI(uri)
+        cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+            binding?.profileImage?.setImageBitmap(bitmap)
         }
 
         binding?.changePictureButton?.setOnClickListener {
-            galleryLauncher?.launch("image/*")
+            cameraLauncher?.launch(null)
         }
+
 
         binding?.logOutButton?.setOnClickListener {
             FirebaseModel.shared.signOutUser()

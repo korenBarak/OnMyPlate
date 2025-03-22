@@ -2,6 +2,7 @@ package com.example.onmyplate
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -39,7 +40,8 @@ var MAX_PHOTOS = 5
 class SinglePostFragment : Fragment() {
     private lateinit var binding: FragmentSinglePostBinding
     private var postListViewModel: PostListViewModel? = null
-    private var cameraLauncher: ActivityResultLauncher<Void?>? = null
+    private var galleryLauncher: ActivityResultLauncher<String>? = null
+
     private var adapter: ImageRecyclerAdapter? = null
     private var photosArr: MutableList<ImageData> = mutableListOf<ImageData>()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
@@ -107,20 +109,19 @@ class SinglePostFragment : Fragment() {
 
         binding.recyclerView.adapter = adapter
 
-        cameraLauncher =
-            registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
-                if (bitmap != null) {
-                    photosArr.add(ImageData.BitmapData(bitmap))
-                    adapter?.set(photosArr)
+        galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri != null) {
+                val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, uri)
+                photosArr.add(ImageData.BitmapData(bitmap))
+                adapter?.set(photosArr)
 
-                    if (photosArr.size >= MAX_PHOTOS)
-                        binding.addPhotoButton.isEnabled = false
-                }
-
+                if (photosArr.size >= MAX_PHOTOS)
+                    binding.addPhotoButton.isEnabled = false
             }
+        }
 
         binding.addPhotoButton.setOnClickListener {
-            cameraLauncher?.launch(null)
+            galleryLauncher?.launch("image/*")
         }
 
         binding.submitButton.setOnClickListener {
