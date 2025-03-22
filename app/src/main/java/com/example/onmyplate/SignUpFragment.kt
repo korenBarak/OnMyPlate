@@ -10,8 +10,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import com.example.onmyplate.base.MyApplication
 import com.example.onmyplate.databinding.FragmentSignUpBinding
 import com.example.onmyplate.model.FirebaseModel
 import com.example.onmyplate.model.User
@@ -30,8 +30,7 @@ class SignUpFragment : Fragment() {
     ): View? {
         binding = FragmentSignUpBinding.inflate(inflater, container, false)
 
-//        FirebaseModel().signOutUser()
-        val signedUser = FirebaseModel().getUser()
+        val signedUser = FirebaseModel.shared.getUser()
 
         viewModel = if (signedUser == null) {
             ViewModelProvider(this)[SignUpViewModel::class.java]
@@ -49,12 +48,16 @@ class SignUpFragment : Fragment() {
             galleryLauncher?.launch("image/*")
         }
 
+        binding?.logOutButton?.setOnClickListener {
+            FirebaseModel.shared.signOutUser()
+            val intent = Intent(MyApplication.Globals.context, SignPageActivity::class.java)
+            startActivity(intent)
+        }
+
         binding?.signUpButton?.setOnClickListener {
             val nameText = binding?.nameTextField?.text.toString()
             val emailText = binding?.emailTextField?.text.toString()
             val passwordText = binding?.passwordTextField?.text.toString()
-            val intent = Intent(requireContext(), NavigationActivity::class.java)
-            intent.putExtra("DATA_TYPE", "all")
 
             if (nameText.isBlank() || emailText.isBlank()) {
                 Toast.makeText(activity, "יש למלא את כל הפרטים", Toast.LENGTH_SHORT).show()
@@ -79,7 +82,6 @@ class SignUpFragment : Fragment() {
                     )
 
                     viewModel.handleButtonClick(user, bitmap)
-                    startActivity(intent)
                 }
             }
         }

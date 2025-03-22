@@ -1,6 +1,7 @@
 package com.example.onmyplate.viewModel
 
 import android.graphics.Bitmap
+import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModel
 import com.example.onmyplate.R
@@ -18,6 +19,7 @@ class EditProfileViewModel: ViewModel(), ProfileViewModel {
             binding?.emailTextField?.isEnabled = false
             binding?.passwordTextField?.isVisible = false
             binding?.signUpButton?.setText("עדכן פרופיל")
+            binding?.logOutButton?.visibility = View.VISIBLE
 
             if(it.photoUrl != null) {
                 Picasso.get()
@@ -26,7 +28,6 @@ class EditProfileViewModel: ViewModel(), ProfileViewModel {
                     .into(binding?.profileImage)
 
             }
-
         }
     }
 

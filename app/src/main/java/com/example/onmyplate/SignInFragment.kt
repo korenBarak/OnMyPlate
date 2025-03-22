@@ -1,6 +1,5 @@
 package com.example.onmyplate
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -22,13 +21,10 @@ class SignInFragment : Fragment() {
         binding?.signInButton?.setOnClickListener {
             val email = binding?.emailTextField?.text.toString()
             val password = binding?.passwordTextField?.text.toString()
-            val intent = Intent(requireContext(), NavigationActivity::class.java)
-            intent.putExtra("DATA_TYPE", "all")
             if (email.isEmpty() || password.isEmpty())
                 Toast.makeText(activity, "יש למלא את כל הפרטים הנדרשים", Toast.LENGTH_SHORT).show()
             else
-                FirebaseModel().signInUser(email, password)
-                startActivity(intent)
+                FirebaseModel.shared.signInUser(email, password)
         }
 
         return binding?.root

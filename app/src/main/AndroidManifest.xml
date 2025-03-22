@@ -19,11 +19,8 @@
             android:exported="true">
         </activity>
         <activity
-            android:name=".SinglePostActivity"
-            android:exported="true">
-        </activity>
-        <activity
             android:name=".NavigationActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="true">
         </activity>
         <activity
@@ -31,7 +28,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

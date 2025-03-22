@@ -1,5 +1,6 @@
 package com.example.onmyplate
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.example.onmyplate.adapter.ImageData
@@ -21,6 +24,7 @@ import com.example.onmyplate.model.Post
 import com.example.onmyplate.model.ServerRequestsModel
 import com.example.onmyplate.model.room.AppLocalDb
 import com.example.onmyplate.model.room.PartialPost
+import com.example.onmyplate.viewModel.PostListViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,16 +38,19 @@ var MAX_PHOTOS = 5
 
 class SinglePostFragment : Fragment() {
     private lateinit var binding: FragmentSinglePostBinding
+    private var postListViewModel: PostListViewModel? = null
     private var cameraLauncher: ActivityResultLauncher<Void?>? = null
     private var adapter: ImageRecyclerAdapter? = null
     private var photosArr: MutableList<ImageData> = mutableListOf<ImageData>()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private var generatedId = UUID.randomUUID().toString()
+    private val args: SinglePostFragmentArgs by navArgs()
+
     private var isNewPost: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        isNewPost = arguments?.getString("postId").isNullOrBlank() != false
+        isNewPost = args.postId.isNullOrBlank() != false
     }
 
     override fun onCreateView(
@@ -53,6 +60,7 @@ class SinglePostFragment : Fragment() {
         super.onCreate(savedInstanceState)
         // window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
         binding = FragmentSinglePostBinding.inflate(inflater, container, false)
+        postListViewModel = ViewModelProvider(requireActivity()).get(PostListViewModel::class.java)
         initFields()
 
 
@@ -86,19 +94,13 @@ class SinglePostFragment : Fragment() {
         binding.restaurantTextField.setOnFocusChangeListener { view, b ->
             handleInputChange()
         }
-
         binding.descriptionTextField.setOnFocusChangeListener { view, b ->
             handleInputChange()
         }
-
         binding.tagsTextField.setOnFocusChangeListener { view, b ->
             handleInputChange()
         }
 
-
-        binding.ratingBar.setOnRatingBarChangeListener { ratingBar, fl, b ->
-            handleInputChange()
-        }
 
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(binding.recyclerView)
@@ -126,7 +128,7 @@ class SinglePostFragment : Fragment() {
             val tags = binding.tagsTextField.text.toString()
             val description = binding.descriptionTextField.text.toString()
 
-            if (restaurantName.isBlank() || tags.isBlank() || description.isBlank()) {
+            if (restaurantName.isBlank() || tags.isBlank() || description.isBlank() || photosArr.size == 0) {
                 toastWrapper("יש למלא את כל הפרטים")
             } else {
                 binding.circularProgressBar.visibility = View.VISIBLE
@@ -166,10 +168,10 @@ class SinglePostFragment : Fragment() {
             else -> {
                 var selectedPlace: GoogleApiPlace? = null
                 MaterialAlertDialogBuilder(
-                    MyApplication.Globals.context!!,
+                    requireContext(),
                     R.style.CustomMaterialAlertDialogStyle
                 )
-                    .setTitle("נמצאו כמה מסעדות התואמות לשם: $restaurantName, בחר מה המסעדה המתאימה")
+                    .setTitle("נמצאו כמה מסעדות התואמות לשם: $restaurantName")
                     .setNeutralButton("בטל") { dialog, _ -> dialog.dismiss() }
                     .setPositiveButton("בחר") { _, _ ->
                         if (selectedPlace != null) {
@@ -194,7 +196,8 @@ class SinglePostFragment : Fragment() {
     }
 
     private fun handleSaveRestaurant(googlePlace: GoogleApiPlace) {
-        val user = FirebaseModel().getUser()
+        binding.circularProgressBar.visibility = View.VISIBLE
+        val user = FirebaseModel.shared.getUser()
 
         if (user == null) {
             toastWrapper("חלה שגיאה, המשתמש לא נמצא")
@@ -213,15 +216,54 @@ class SinglePostFragment : Fragment() {
                 googleRating = roundedRating
             )
 
+            val bitmapPhotos: List<Bitmap> =
+                photosArr.filterIsInstance<ImageData.BitmapData>().map { photo -> photo.bitmap }
 
-            // TODO: handle photosArr to bitmap or something , photosArr
-            ServerRequestsModel.addPost(post, mutableListOf()) {
-                binding.circularProgressBar.visibility = View.GONE
-                // back one level
-//                val intent = Intent(this, NavigationActivity::class.java)
-//                intent.putExtra("DATA_TYPE", "all")
-//                startActivity(intent)
+            if (isNewPost) {
+                deletePostFromRoom()
+                ServerRequestsModel.addPost(post, bitmapPhotos.toMutableList()) {
+                    if (it != null)
+                        postListViewModel?.addPost(it)
+                    else
+                        Toast.makeText(
+                            MyApplication.Globals.context,
+                            "הוספת הפוסט נכשלה",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                    binding.circularProgressBar.visibility = View.GONE
+                    requireActivity().supportFragmentManager.popBackStack()
+                }
+            } else {
+                ServerRequestsModel.updatePost(
+                    arguments?.getString("postId").toString(),
+                    post,
+                    bitmapPhotos.toMutableList(),
+                    photosArr
+                ) {
+                    if (it != null)
+                        postListViewModel?.updatePost(it)
+                    else
+                        Toast.makeText(
+                            MyApplication.Globals.context,
+                            "עדכון הפוסט נכשל",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                    binding.circularProgressBar.visibility = View.GONE
+                    requireActivity().supportFragmentManager.popBackStack()
+                }
             }
+        }
+
+        binding.circularProgressBar.visibility = View.GONE
+    }
+
+    private fun deletePostFromRoom() {
+        generatedId = ""
+
+        CoroutineScope(Dispatchers.IO).launch {
+            AppLocalDb.database.partialPostData().deleteById(generatedId)
         }
     }
 
@@ -231,7 +273,6 @@ class SinglePostFragment : Fragment() {
 
             CoroutineScope(Dispatchers.IO).launch {
                 val partialPost = AppLocalDb.database.partialPostData().getLastPartialPost()
-
                 if (partialPost != null) {
                     withContext(Dispatchers.Main) {
                         binding.ratingBar.rating = partialPost.rating ?: 0.0F
@@ -241,26 +282,27 @@ class SinglePostFragment : Fragment() {
 
                     }
 
+                    generatedId = partialPost.id
                     AppLocalDb.database.partialPostData().delete(partialPost)
                 }
             }
 
             binding.circularProgressBar.visibility = View.GONE
         } else {
-            binding.ratingBar.rating = arguments?.getFloat("rating") ?: 0.0F
-            binding.restaurantTextField.setText(arguments?.getString("restaurantName") ?: "")
-            binding.descriptionTextField.setText(arguments?.getString("description") ?: "")
-            binding.tagsTextField.setText(arguments?.getString("tags") ?: "")
+            binding.ratingBar.rating = args.rating
+            binding.restaurantTextField.setText(args.restaurantName)
+            binding.descriptionTextField.setText(args.description)
+            binding.tagsTextField.setText(args.tags)
 
             photosArr =
-                arguments?.getStringArray("photos")?.map { photo -> ImageData.StringData(photo) }
+                args.photos?.map { photo -> ImageData.StringData(photo) }
                     ?.toMutableList() ?: mutableListOf()
 
         }
     }
 
     private fun handleInputChange() {
-        if (isNewPost) {
+        if (isNewPost && generatedId.isNotEmpty()) {
             CoroutineScope(Dispatchers.IO).launch {
                 AppLocalDb.database.partialPostData().insertData(
                     PartialPost(

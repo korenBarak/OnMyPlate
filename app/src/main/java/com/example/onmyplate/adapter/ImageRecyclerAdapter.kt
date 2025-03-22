@@ -1,6 +1,5 @@
 package com.example.onmyplate.adapter
 
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
@@ -9,13 +8,14 @@ import com.example.onmyplate.R
 import com.google.android.material.textview.MaterialTextView
 
 class ImageRecyclerAdapter(
-    private var imageList: MutableList<Bitmap>,
-    private var photoIndicatorTextView: MaterialTextView?
+    private var imageList: MutableList<ImageData>,
+    private var photoIndicatorTextView: MaterialTextView?,
+    private var isAbleToDelete: Boolean = true
 ) :
     RecyclerView.Adapter<ImageViewHolder>() {
     var onDeleteListener: onDeleteButtonClickListener? = null
 
-    fun set(imageList: MutableList<Bitmap>) {
+    fun set(imageList: MutableList<ImageData>) {
         this.imageList = imageList
         notifyDataSetChanged()
     }
@@ -23,7 +23,7 @@ class ImageRecyclerAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.single_image_view, parent, false)
-        return ImageViewHolder(view, onDeleteListener)
+        return ImageViewHolder(view, onDeleteListener, isAbleToDelete)
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {

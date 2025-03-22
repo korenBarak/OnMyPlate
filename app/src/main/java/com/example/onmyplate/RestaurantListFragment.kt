@@ -1,73 +1,82 @@
 package com.example.onmyplate
 
-import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.onmyplate.adapter.RestaurantListAdapter
 import com.example.onmyplate.databinding.FragmentRestaurantListBinding
-import com.example.onmyplate.databinding.FragmentRestaurantListItemBinding
-import com.example.onmyplate.databinding.FragmentSignInBinding
+import com.example.onmyplate.model.FirebaseModel
 import com.example.onmyplate.model.Post
-import com.example.onmyplate.model.ServerRequestsModel
+import com.example.onmyplate.viewModel.PostListViewModel
+import com.google.firebase.auth.FirebaseUser
 import java.util.Locale
 
 class RestaurantListFragment : Fragment() {
     private var restaurants: List<Post>? = listOf()
     private var adapter: RestaurantListAdapter? = null
+    private var postListViewModel: PostListViewModel? = null
+    private val args: RestaurantListFragmentArgs by navArgs()
     private lateinit var binding: FragmentRestaurantListBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View{
+    ): View {
         binding = FragmentRestaurantListBinding.inflate(inflater, container, false)
-
+        postListViewModel = ViewModelProvider(requireActivity()).get(PostListViewModel::class.java)
         val recyclerView: RecyclerView = binding.recyclerView
         val searchView: SearchView = binding.searchView
 
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        adapter = RestaurantListAdapter(restaurants) { restaurant ->
-            // Handle row click, navigate to the details screen
-            var firstPhoto: String? = ""
-            if(restaurant?.photoUrls?.size != 0) {
-                firstPhoto = restaurant?.photoUrls?.get(0)
-            }
-            val bundle = Bundle().apply {
-                putString("restaurantName", restaurant!!.restaurantName)
-                putFloat("rating", restaurant.rating)
-                putString("description", restaurant.description)
-                putString("photo", firstPhoto ?: "" )
-            }
+        val isAbleToModify = args.datatype != "all"
 
-            val restaurantPageFragment = RestaurantPageFragment()
-            restaurantPageFragment.arguments = bundle
+        adapter = RestaurantListAdapter(
+            restaurants,
+            isAbleToModify,
+            { goToEditPost(it) },
+            { deletePost(it) }) { restaurant ->
+            //
 
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.frame_layout, restaurantPageFragment)
-            transaction.addToBackStack(null)
-            transaction.commit()
+            if (restaurant != null) {
+                FirebaseModel.shared.getUserById(restaurant.userId) {
+                    binding.circularProgressBar.visibility = View.VISIBLE
+
+                    val action = createNavigationAction(
+                        restaurant,
+                        it?.name ?: "",
+                        (it?.profilePictureUrl ?: "").toString()
+                    )
+
+                    binding.circularProgressBar.visibility = View.GONE
+                    findNavController().navigate(action)
+                }
+            }
         }
         recyclerView.adapter = adapter
 
-        if(arguments?.getString("DATA_TYPE") == "all") {
+        if (args.datatype == "all") {
             getAllPosts()
-        }else {
+        } else {
             getUsersPosts()
+            binding.swipeRefreshLayout.isEnabled = false
         }
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            if (args.datatype == "all")
+                postListViewModel?.getAllPosts()
+        }
+
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -81,18 +90,93 @@ class RestaurantListFragment : Fragment() {
 
         })
 
+        binding.addPostButton.setOnClickListener {
+            val action =
+                RestaurantListFragmentDirections.actionRestaurantListFragmentToSinglePostFragment(
+                    null,
+                    null,
+                    null,
+                    null,
+                    0.0F,
+                    0.0F,
+                    null
+                )
+
+            findNavController().navigate(action)
+        }
+
         return binding.root
     }
 
+    private fun goToEditPost(post: Post?) {
+        val action =
+            RestaurantListFragmentDirections.actionRestaurantListFragmentToSinglePostFragment(
+                post?.postId ?: "",
+                post?.restaurantName,
+                post?.description,
+                post?.tags,
+                post?.rating ?: 0.0F,
+                post?.googleRating?.toFloat() ?: 0.0F,
+                post?.photoUrls?.filterNotNull()?.toTypedArray() ?: emptyArray()
+            )
+
+        findNavController().navigate(action)
+    }
+
+    private fun deletePost(postId: String?) {
+        if (postId != null) {
+            postListViewModel?.deletePost(postId)
+            binding.searchView.setQuery("", true)
+        }
+    }
+
+    private fun createNavigationAction(
+        post: Post,
+        userName: String,
+        userProfile: String
+    ): RestaurantListFragmentDirections.ActionRestaurantListFragmentToRestaurantPageFragment {
+        return RestaurantListFragmentDirections.actionRestaurantListFragmentToRestaurantPageFragment(
+            post.postId ?: "",
+            userName,
+            userProfile,
+            post.restaurantName,
+            post.description,
+            post.tags,
+            post.rating,
+            post.googleRating?.toFloat() ?: 0.0F,
+            post.photoUrls?.filterNotNull()?.toTypedArray() ?: emptyArray()
+        )
+
+
+    }
+
     private fun getAllPosts() {
-        ServerRequestsModel.getAllPosts {
+        binding.circularProgressBar.visibility = View.VISIBLE
+
+        postListViewModel?.postList?.observe(viewLifecycleOwner) {
+            restaurants = it
             adapter?.setFilteredList(it)
+        }
+
+        postListViewModel?.loadingState?.observe(viewLifecycleOwner) {
+            if (it == PostListViewModel.LoadingState.LOADED) {
+                binding.circularProgressBar.visibility = View.GONE
+                binding.swipeRefreshLayout.isRefreshing = false
+            }
+
         }
     }
 
     private fun getUsersPosts() {
-        ServerRequestsModel.getUsersPosts {
-            adapter?.setFilteredList(it)
+        postListViewModel?.postList?.observe(viewLifecycleOwner) {
+            val currentUser: FirebaseUser? = FirebaseModel.shared.getUser()
+
+            if (currentUser != null) {
+                val usersRestaurant = it.filter { post -> post.userId == currentUser.uid }
+                restaurants = usersRestaurant
+                adapter?.setFilteredList(usersRestaurant)
+            }
+
         }
     }
 
@@ -106,10 +190,10 @@ class RestaurantListFragment : Fragment() {
             }
 
             if (filteredList.isEmpty()) {
-                Toast.makeText(context, "No Data found", Toast.LENGTH_SHORT).show()
-            } else {
-                adapter?.setFilteredList(filteredList)
+                Toast.makeText(context, "לא נמצאו מסעדות", Toast.LENGTH_SHORT).show()
             }
+
+            adapter?.setFilteredList(filteredList)
         }
     }
 }
