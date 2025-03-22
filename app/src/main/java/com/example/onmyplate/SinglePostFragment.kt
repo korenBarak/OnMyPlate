@@ -260,11 +260,10 @@ class SinglePostFragment : Fragment() {
     }
 
     private fun deletePostFromRoom() {
-        generatedId = ""
-
         CoroutineScope(Dispatchers.IO).launch {
             AppLocalDb.database.partialPostData().deleteById(generatedId)
         }
+        generatedId = ""
     }
 
     private fun initFields() {
