@@ -11,6 +11,7 @@ import com.squareup.picasso.Picasso
 interface onDeleteButtonClickListener {
     fun onItemClick(photo: ImageData?)
 }
+
 sealed class ImageData {
     data class BitmapData(val bitmap: Bitmap) : ImageData()
     data class StringData(val url: String) : ImageData()
@@ -29,10 +30,11 @@ public class ImageViewHolder(
     fun bind(photo: ImageData) {
         this.photo = photo
 
-        when(photo) {
+        when (photo) {
             is ImageData.BitmapData -> {
                 imageView.setImageBitmap(photo.bitmap)
             }
+
             is ImageData.StringData -> {
                 Picasso.get()
                     .load(photo.url)
@@ -42,11 +44,11 @@ public class ImageViewHolder(
     }
 
     init {
-        if (isAbleToDelete && photo is ImageData.BitmapData)
+        if (isAbleToDelete) {
             deleteButton.setOnClickListener {
                 listener?.onItemClick(photo)
             }
-        else
+        } else
             deleteButton.visibility = View.GONE
     }
 }
